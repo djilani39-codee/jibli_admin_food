@@ -1,0 +1,171 @@
+{
+  "project_info": {
+    "project_number": "77890438228",
+    "firebase_url": "https://jibli-7441e-default-rtdb.firebaseio.com",
+    "project_id": "jibli-7441e",
+    "storage_bucket": "jibli-7441e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77890438228:android:6d097c2e7f0164c275d9c1",
+        "android_client_info": {
+          "package_name": "com.example.jibli_admin_food"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "77890438228-tkoqqo10jq0cgfvnbmr341egnhn3tg5a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDArceiEn8pzvkeShmR0sIUM4yFtDMHHrw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "77890438228-tkoqqo10jq0cgfvnbmr341egnhn3tg5a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "77890438228-3rsr94lg7nv00rfaog21hmq1a4pot0og.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jibli.market475"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77890438228:android:36116313fbd1fa8875d9c1",
+        "android_client_info": {
+          "package_name": "com.jibli.deliveryboy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "77890438228-tkoqqo10jq0cgfvnbmr341egnhn3tg5a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDArceiEn8pzvkeShmR0sIUM4yFtDMHHrw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "77890438228-tkoqqo10jq0cgfvnbmr341egnhn3tg5a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "77890438228-3rsr94lg7nv00rfaog21hmq1a4pot0og.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jibli.market475"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77890438228:android:2df5d7dc0eb903bd75d9c1",
+        "android_client_info": {
+          "package_name": "com.jibli.market"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "77890438228-5p3karh81gqotieo3nd6c1gf4geilhhj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jibli.market",
+            "certificate_hash": "4f2dc237bded54fb051fd2c5049563753e5db2ea"
+          }
+        },
+        {
+          "client_id": "77890438228-nr2altbeepjq3v0it5sfok1a5nobf0sj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jibli.market",
+            "certificate_hash": "be07b8bb3894d1db1310b4807f08dc0ee5486975"
+          }
+        },
+        {
+          "client_id": "77890438228-tkoqqo10jq0cgfvnbmr341egnhn3tg5a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDArceiEn8pzvkeShmR0sIUM4yFtDMHHrw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "77890438228-tkoqqo10jq0cgfvnbmr341egnhn3tg5a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "77890438228-3rsr94lg7nv00rfaog21hmq1a4pot0og.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jibli.market475"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77890438228:android:179eab85bf38fb1275d9c1",
+        "android_client_info": {
+          "package_name": "com.jibli.owner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "77890438228-tkoqqo10jq0cgfvnbmr341egnhn3tg5a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDArceiEn8pzvkeShmR0sIUM4yFtDMHHrw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "77890438228-tkoqqo10jq0cgfvnbmr341egnhn3tg5a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "77890438228-3rsr94lg7nv00rfaog21hmq1a4pot0og.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jibli.market475"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
