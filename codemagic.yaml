@@ -1,0 +1,34 @@
+workflows:
+  ios-testflight:
+    name: iOS TestFlight
+    instance_type: mac_mini
+    max_build_duration: 120
+    environment:
+      vars:
+        FLUTTER_CHANNEL: stable
+        APP_STORE_CONNECT_KEY_ID: 26BCPY32UH
+        APP_STORE_CONNECT_ISSUER_ID: 8ebc6cdd-cbe9-45c2-878b-19c4896ae157
+      # Do NOT store the private key plaintext here. Add it as a secure env var in Codemagic UI
+      # or use Codemagic's App Store Connect API key upload (recommended).
+      # Example secure var name: APP_STORE_CONNECT_PRIVATE_KEY_BASE64
+    scripts:
+      - name: Install Flutter packages
+        script: |
+          flutter pub get
+
+      - name: Install CocoaPods
+        script: |
+          cd ios
+          pod install --repo-update
+          cd ..
+
+      - name: Build IPA
+        script: |
+          flutter build ipa --export-method=app-store
+
+    publishing:
+      - provider: appstore
+        api_key_id: $APP_STORE_CONNECT_KEY_ID
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        private_key: $APP_STORE_CONNECT_PRIVATE_KEY_BASE64
+        skip_upload_metadata: true
