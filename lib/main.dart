@@ -347,10 +347,10 @@ void main() async {
   );
 
   // 3. تشغيل كل الخدمات في الخلفية بعد أن تظهر الشاشة للمستخدم
-  _initAllServices();
+  _initServices();
 }
 
-Future<void> _initAllServices() async {
+Future<void> _initServices() async {
   try {
     // Ensure localization resources (if needed) but run in background
     await EasyLocalization.ensureInitialized();
