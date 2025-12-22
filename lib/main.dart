@@ -333,85 +333,38 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void main() async {
-  // 1. تشغيل المحرك الأساسي (الخطوة الوحيدة التي ننتظرها)
+  // 1. التهيئة الأساسية فقط
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // 2. تشغيل اللغات (ضروري قبل الواجهة)
-  await EasyLocalization.ensureInitialized();
 
-  // 3. تشغيل الواجهة فوراً مع شاشة أولية آمنة
-  // AppStarter سيعرض واجهة بسيطة ثم يشغّل الخدمات الثقيلة في الخلفية
+  // 2. تشغيل التطبيق فوراً (بدون انتظار أي await)
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
-      path: 'assets/translations',
+      path: 'assets/translations', // تأكد أن هذا المسار مطابق لما في pubspec.yaml
       fallbackLocale: const Locale('ar'),
-      child: const AppStarter(),
+      child: const MyApp(),
     ),
   );
+
+  // 3. تشغيل كل الخدمات في الخلفية بعد أن تظهر الشاشة للمستخدم
+  _initAllServices();
 }
 
-// دالة التشغيل في الخلفية لضمان عدم تعليق التطبيق
-Future<void> _initServices() async {
+Future<void> _initAllServices() async {
   try {
+    // Ensure localization resources (if needed) but run in background
+    await EasyLocalization.ensureInitialized();
+
+    // Initialize Firebase and messaging
     await Firebase.initializeApp();
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-    
-    // تشغيل الـ Dependency Injection والإشعارات
+
+    // DI and notifications
     await di.init();
     await NotificationSetUp.init();
-    
-    print("iOS Services Initialized in background");
+
+    print("All iOS Services loaded in background");
   } catch (e) {
-    print("Background Init Error: $e");
-  }
-}
-
-class AppStarter extends StatefulWidget {
-  const AppStarter({super.key});
-
-  @override
-  State<AppStarter> createState() => _AppStarterState();
-}
-
-class _AppStarterState extends State<AppStarter> {
-  bool _ready = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _start();
-  }
-
-  Future<void> _start() async {
-    try {
-      await _initServices();
-    } catch (e) {
-      print('AppStarter init error: $e');
-    }
-
-    if (!mounted) return;
-    setState(() => _ready = true);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_ready) {
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          backgroundColor: const Color(0xFFEE4266),
-          body: Center(
-            child: Image.asset(
-              'assets/logo/logo_jibli.jpeg',
-              width: 120,
-              height: 120,
-            ),
-          ),
-        ),
-      );
-    }
-
-    return const MyApp();
+    print("Error initializing services: $e");
   }
 }
