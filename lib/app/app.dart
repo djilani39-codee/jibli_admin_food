@@ -196,7 +196,6 @@ class _MyAppState extends State<MyApp> {
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
-          useInheritedMediaQuery: true,
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
           routerConfig: router,
@@ -293,8 +292,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 Future<dynamic> showSmartNotificationBackground(dynamic message, int length) {
-  return SmartDialog.show(
-      backDismiss: false,
+    return SmartDialog.show(
       clickMaskDismiss: false,
       builder: (_) => Container(
             height: 20.h,

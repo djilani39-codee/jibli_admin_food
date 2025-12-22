@@ -151,8 +151,7 @@ Future<dynamic> showSmartNotification({
   String? body,
   required int length,
 }) {
-  return SmartDialog.show(
-      backDismiss: false,
+    return SmartDialog.show(
       clickMaskDismiss: false,
       builder: (_) => Container(
             height: 20.h,

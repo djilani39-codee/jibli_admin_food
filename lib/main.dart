@@ -241,7 +241,7 @@ import 'package:jibli_admin_food/app/app.dart';
 import 'package:jibli_admin_food/core/notificaion/notification.dart';
 
 import 'app/locator.dart' as di;
-import 'core/bootstrap/bootstrap.dart';
+// bootstrap removed: not used here
 
 // final player = AudioPlayer();
 ReceivePort port = ReceivePort();
@@ -333,38 +333,30 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void main() async {
-  // 1. التهيئة الأساسية فقط
+  // 1. تهيئة المحرك
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 2. تشغيل التطبيق فوراً (بدون انتظار أي await)
+  // 2. تهيئة اللغات والبيانات (ضروري جداً لمنع الشاشة الحمراء)
+  await EasyLocalization.ensureInitialized();
+  await di.init(); // هذا سيحل مشكلة GetIt التي ظهرت في الصورة
+
+  // 3. تهيئة Firebase (هنا قد يحدث تعليق iOS، لذا سنضعه داخل try-catch)
+  try {
+    // نحدد مهلة زمنية أو نتركه يعمل، وإذا فشل لا يعطل التطبيق
+    await Firebase.initializeApp().timeout(const Duration(seconds: 5));
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    await NotificationSetUp.init();
+  } catch (e) {
+    print("Firebase initialization timed out or failed: $e");
+  }
+
+  // 4. تشغيل التطبيق
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
-      path: 'assets/translations', // تأكد أن هذا المسار مطابق لما في pubspec.yaml
+      path: 'assets/translations',
       fallbackLocale: const Locale('ar'),
       child: const MyApp(),
     ),
   );
-
-  // 3. تشغيل كل الخدمات في الخلفية بعد أن تظهر الشاشة للمستخدم
-  _initServices();
-}
-
-Future<void> _initServices() async {
-  try {
-    // Ensure localization resources (if needed) but run in background
-    await EasyLocalization.ensureInitialized();
-
-    // Initialize Firebase and messaging
-    await Firebase.initializeApp();
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
-    // DI and notifications
-    await di.init();
-    await NotificationSetUp.init();
-
-    print("All iOS Services loaded in background");
-  } catch (e) {
-    print("Error initializing services: $e");
-  }
 }
