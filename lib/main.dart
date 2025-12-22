@@ -339,19 +339,16 @@ void main() async {
   // 2. تشغيل اللغات (ضروري قبل الواجهة)
   await EasyLocalization.ensureInitialized();
 
-  // 3. تشغيل الواجهة فوراً (runApp)
-  // هذا السطر سيمسح الشاشة البيضاء ويظهر تطبيقك
+  // 3. تشغيل الواجهة فوراً مع شاشة أولية آمنة
+  // AppStarter سيعرض واجهة بسيطة ثم يشغّل الخدمات الثقيلة في الخلفية
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
       path: 'assets/translations',
       fallbackLocale: const Locale('ar'),
-      child: const MyApp(),
+      child: const AppStarter(),
     ),
   );
-
-  // 4. تشغيل الخدمات الثقيلة (Firebase و الإشعارات) بعد ظهور الواجهة
-  _initServices();
 }
 
 // دالة التشغيل في الخلفية لضمان عدم تعليق التطبيق
@@ -367,5 +364,54 @@ Future<void> _initServices() async {
     print("iOS Services Initialized in background");
   } catch (e) {
     print("Background Init Error: $e");
+  }
+}
+
+class AppStarter extends StatefulWidget {
+  const AppStarter({super.key});
+
+  @override
+  State<AppStarter> createState() => _AppStarterState();
+}
+
+class _AppStarterState extends State<AppStarter> {
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _start();
+  }
+
+  Future<void> _start() async {
+    try {
+      await _initServices();
+    } catch (e) {
+      print('AppStarter init error: $e');
+    }
+
+    if (!mounted) return;
+    setState(() => _ready = true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_ready) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          backgroundColor: const Color(0xFFEE4266),
+          body: Center(
+            child: Image.asset(
+              'assets/logo/logo_jibli.jpeg',
+              width: 120,
+              height: 120,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return const MyApp();
   }
 }
