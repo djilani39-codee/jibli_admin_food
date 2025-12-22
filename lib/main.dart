@@ -333,17 +333,39 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void main() async {
+  // 1. تشغيل المحرك الأساسي (الخطوة الوحيدة التي ننتظرها)
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp();
+  
+  // 2. تشغيل اللغات (ضروري قبل الواجهة)
   await EasyLocalization.ensureInitialized();
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  await di.init();
-  IsolateNameServer.removePortNameMapping("_listener_");
-  IsolateNameServer.registerPortWithName(port.sendPort, "_listener_");
+  // 3. تشغيل الواجهة فوراً (runApp)
+  // هذا السطر سيمسح الشاشة البيضاء ويظهر تطبيقك
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('ar')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('ar'),
+      child: const MyApp(),
+    ),
+  );
 
-  await NotificationSetUp.init();
+  // 4. تشغيل الخدمات الثقيلة (Firebase و الإشعارات) بعد ظهور الواجهة
+  _initServices();
+}
 
-  bootstrap(const MyApp());
+// دالة التشغيل في الخلفية لضمان عدم تعليق التطبيق
+Future<void> _initServices() async {
+  try {
+    await Firebase.initializeApp();
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    
+    // تشغيل الـ Dependency Injection والإشعارات
+    await di.init();
+    await NotificationSetUp.init();
+    
+    print("iOS Services Initialized in background");
+  } catch (e) {
+    print("Background Init Error: $e");
+  }
 }
