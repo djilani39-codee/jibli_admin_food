@@ -3,19 +3,19 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>77890438228-g69j8ghsubcln7b5o11dibv7jiuf527f.apps.googleusercontent.com</string>
+	<string>77890438228-lguc6m9oqqedqc5pscr7frru0i8ugt22.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.77890438228-g69j8ghsubcln7b5o11dibv7jiuf527f</string>
+	<string>com.googleusercontent.apps.77890438228-lguc6m9oqqedqc5pscr7frru0i8ugt22</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>77890438228-5p3karh81gqotieo3nd6c1gf4geilhhj.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyA8Fz31XupGJ8cM_-T_xGmsx-1o1vlPYtk</string>
+	<string>AIzaSyAckzeT1z5Ov5HyI_HHSe1cfkAXf2qF3rc</string>
 	<key>GCM_SENDER_ID</key>
 	<string>77890438228</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.jibliAdminFood</string>
+	<string>com.jibli.admin.app</string>
 	<key>PROJECT_ID</key>
 	<string>jibli-7441e</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,7 +31,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:77890438228:ios:a44ef1842ccfc73d75d9c1</string>
+	<string>1:77890438228:ios:05cc3db28f15a9eb75d9c1</string>
 	<key>DATABASE_URL</key>
 	<string>https://jibli-7441e-default-rtdb.firebaseio.com</string>
 </dict>
