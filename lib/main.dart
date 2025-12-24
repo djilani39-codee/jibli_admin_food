@@ -346,6 +346,13 @@ void main() async {
     await Firebase.initializeApp().timeout(const Duration(seconds: 5));
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     await NotificationSetUp.init();
+      // طباعة توكن FCM بسرعة لتسهيل الاختبار (سيظهر في سجلات الـ console)
+      try {
+        final String? fcmToken = await FirebaseMessaging.instance.getToken();
+        print('FCM_TOKEN_START: $fcmToken :FCM_TOKEN_END');
+      } catch (e) {
+        print('Error getting FCM token: $e');
+      }
   } catch (e) {
     print("Firebase initialization timed out or failed: $e");
   }

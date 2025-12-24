@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:jibli_admin_food/data/local_data_source/local_data_keys.dart';
@@ -44,22 +45,27 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     onListen();
-    // Show debug dialog without blocking the UI
-    if (kDebugMode) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showDebugDialog();
-      });
-    }
+    // Show debug dialog without blocking the UI (show also in TestFlight/devices)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showDebugDialog();
+    });
   }
 
-  void _showDebugDialog() {
+  void _showDebugDialog() async {
     if (_debugDialogShown) return;
     _debugDialogShown = true;
     
     try {
-      // Get FCM token without blocking (non-blocking check)
-      String token =
-          sl<LocalDataSource>().getValue(LocalDataKeys.fcmToken) ?? 'Loading...';
+      // Get FCM token; prefer cached value but fall back to asking Firebase
+      String token = sl<LocalDataSource>().getValue(LocalDataKeys.fcmToken) ?? '';
+      if (token.isEmpty || token == 'Loading...') {
+        try {
+          final String? fetched = await FirebaseMessaging.instance.getToken();
+          token = fetched ?? 'N/A';
+        } catch (_) {
+          token = 'N/A';
+        }
+      }
 
       // Use SmartDialog to reliably show an overlay dialog
       SmartDialog.show(
