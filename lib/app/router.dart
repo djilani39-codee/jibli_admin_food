@@ -9,8 +9,9 @@ import 'package:jibli_admin_food/presentation/auth/screens/login_page.dart';
 import 'package:jibli_admin_food/presentation/main/main_screen.dart';
 import 'package:jibli_admin_food/presentation/profile/screens/update_work_days.dart';
 
-// Root navigator key (public so other modules can show dialogs)
-final rootNavigatorKey = GlobalKey<NavigatorState>();
+// Root navigator key (private) and public alias so other modules can show dialogs
+final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
+final rootNavigatorKey = _rootNavigatorKey;
 
 
 String _initialLocation() {
