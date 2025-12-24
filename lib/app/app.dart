@@ -221,14 +221,23 @@ class _MyAppState extends State<MyApp> {
                     child: const Icon(Icons.bug_report),
                     backgroundColor: Colors.red,
                     onPressed: () async {
-                      final token = sl<LocalDataSource>()
-                              .getValue(LocalDataKeys.fcmToken) ??
-                          'N/A';
-                      // Delay to ensure Navigator is available
-                      await Future.delayed(const Duration(milliseconds: 100));
-                      if (!context.mounted) return;
+                      // Try cached token first, otherwise fetch from Firebase
+                      String token =
+                          sl<LocalDataSource>().getValue(LocalDataKeys.fcmToken) ?? '';
+                      if (token.isEmpty || token == 'N/A') {
+                        try {
+                          token = await FirebaseMessaging.instance.getToken() ?? 'N/A';
+                        } catch (e) {
+                          token = 'N/A';
+                        }
+                      }
+
+                      // Prefer router's root navigator context if available (works in router apps)
+                      final dialogContext = _rootNavigatorKey.currentContext ?? context;
+
                       await showDialog<void>(
-                        context: context,
+                        context: dialogContext,
+                        useRootNavigator: true,
                         builder: (context) => AlertDialog(
                           title: const Text('Debug: FCM & Notification'),
                           content: SingleChildScrollView(
