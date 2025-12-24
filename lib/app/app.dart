@@ -212,7 +212,6 @@ class _MyAppState extends State<MyApp> {
           builder: (context, child) {
             final dialog = FlutterSmartDialog.init()(context, child);
             final stackChildren = <Widget>[dialog];
-            if (kDebugMode) {
               stackChildren.add(Positioned(
                 right: 16,
                 bottom: 16,
@@ -220,6 +219,7 @@ class _MyAppState extends State<MyApp> {
                   child: FloatingActionButton(
                     heroTag: 'debug_notify',
                     child: const Icon(Icons.bug_report),
+                    backgroundColor: Colors.red,
                     onPressed: () async {
                       final token = sl<LocalDataSource>()
                               .getValue(LocalDataKeys.fcmToken) ??
