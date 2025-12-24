@@ -223,6 +223,16 @@ class _MyAppState extends State<MyApp> {
                     child: const Icon(Icons.bug_report),
                     backgroundColor: Colors.red,
                     onPressed: () async {
+                      // immediate visual feedback: show loading dialog
+                      if (!context.mounted) return;
+                      showDialog<void>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+
                       // Try cached token first, otherwise fetch from Firebase
                       String token =
                           sl<LocalDataSource>().getValue(LocalDataKeys.fcmToken) ?? '';
@@ -236,6 +246,9 @@ class _MyAppState extends State<MyApp> {
 
                       // Use current context to show dialog (simpler and reliable)
                       final dialogContext = context;
+
+                      // dismiss loading
+                      if (context.mounted) Navigator.of(context).pop();
 
                       await showDialog<void>(
                         context: dialogContext,
