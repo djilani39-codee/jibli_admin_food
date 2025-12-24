@@ -244,8 +244,10 @@ class _MyAppState extends State<MyApp> {
                         }
                       }
 
-                      // Use current context to show dialog (simpler and reliable)
-                      final dialogContext = context;
+                        // Prefer root navigator context if available (works with GoRouter),
+                        // fallback to current context.
+                        final dialogContext =
+                          rootNavigatorKey.currentContext ?? context;
 
                       // dismiss loading
                       if (context.mounted) Navigator.of(context).pop();

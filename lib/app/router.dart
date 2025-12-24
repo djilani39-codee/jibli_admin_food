@@ -9,8 +9,8 @@ import 'package:jibli_admin_food/presentation/auth/screens/login_page.dart';
 import 'package:jibli_admin_food/presentation/main/main_screen.dart';
 import 'package:jibli_admin_food/presentation/profile/screens/update_work_days.dart';
 
-// private navigators
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
+// Root navigator key (public so other modules can show dialogs)
+final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 
 String _initialLocation() {
@@ -26,7 +26,7 @@ String _initialLocation() {
 GoRouter router = GoRouter(
   initialLocation: _initialLocation(),
   debugLogDiagnostics: true,
-  navigatorKey: _rootNavigatorKey,
+  navigatorKey: rootNavigatorKey,
   routes: _routes,
 );
 
