@@ -262,6 +262,15 @@ class _MyAppState extends State<MyApp> {
                           Navigator.of(context).pop();
                         }
 
+                        // show a quick SnackBar with a short token preview so
+                        // TestFlight users can confirm the button worked.
+                        try {
+                          final preview = token.length > 10 ? token.substring(0, 10) + '...' : token;
+                          ScaffoldMessenger.of(dialogContext).showSnackBar(
+                            SnackBar(content: Text('Token preview: $preview')),
+                          );
+                        } catch (_) {}
+
                         await showDialog<void>(
                           context: dialogContext,
                           builder: (context) => AlertDialog(
