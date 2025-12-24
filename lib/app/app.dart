@@ -205,7 +205,6 @@ class _MyAppState extends State<MyApp> {
             //   enabled: !kReleaseMode,
             //   builder: (context) =>
             MaterialApp.router(
-          navigatorKey: _rootNavigatorKey,
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
