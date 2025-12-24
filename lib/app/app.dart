@@ -41,6 +41,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _debugDialogShown = false;
+  // Navigator key used to show dialogs from top-level (works with GoRouter)
+  final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
   @override
   void initState() {
     super.initState();
@@ -203,6 +205,7 @@ class _MyAppState extends State<MyApp> {
             //   enabled: !kReleaseMode,
             //   builder: (context) =>
             MaterialApp.router(
+          navigatorKey: _rootNavigatorKey,
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
@@ -232,12 +235,11 @@ class _MyAppState extends State<MyApp> {
                         }
                       }
 
-                      // Prefer router's root navigator context if available (works in router apps)
-                      final dialogContext = _rootNavigatorKey.currentContext ?? context;
+                      // Use current context to show dialog (simpler and reliable)
+                      final dialogContext = context;
 
                       await showDialog<void>(
                         context: dialogContext,
-                        useRootNavigator: true,
                         builder: (context) => AlertDialog(
                           title: const Text('Debug: FCM & Notification'),
                           content: SingleChildScrollView(
