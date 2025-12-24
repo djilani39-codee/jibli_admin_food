@@ -223,8 +223,12 @@ class _MyAppState extends State<MyApp> {
                     child: const Icon(Icons.bug_report),
                     backgroundColor: Colors.red,
                     onPressed: () async {
+                      print('Debug FAB: pressed');
                       // immediate visual feedback: show loading dialog
-                      if (!context.mounted) return;
+                      if (!context.mounted) {
+                        print('Debug FAB: context not mounted');
+                        return;
+                      }
                       showDialog<void>(
                         context: context,
                         barrierDismissible: false,
@@ -233,28 +237,34 @@ class _MyAppState extends State<MyApp> {
                         ),
                       );
 
-                      // Try cached token first, otherwise fetch from Firebase
-                      String token =
-                          sl<LocalDataSource>().getValue(LocalDataKeys.fcmToken) ?? '';
-                      if (token.isEmpty || token == 'N/A') {
-                        try {
-                          token = await FirebaseMessaging.instance.getToken() ?? 'N/A';
-                        } catch (e) {
-                          token = 'N/A';
+                      String token = '';
+                      try {
+                        // Try cached token first
+                        token = sl<LocalDataSource>().getValue(LocalDataKeys.fcmToken) ?? '';
+                        print('Debug FAB: cached token = $token');
+                        if (token.isEmpty || token == 'N/A') {
+                          try {
+                            token = await FirebaseMessaging.instance.getToken() ?? 'N/A';
+                            print('Debug FAB: fetched token = $token');
+                          } catch (e) {
+                            print('Debug FAB: error fetching token: $e');
+                            token = 'N/A';
+                          }
                         }
-                      }
 
                         // Prefer root navigator context if available (works with GoRouter),
                         // fallback to current context.
-                        final dialogContext =
-                          rootNavigatorKey.currentContext ?? context;
+                        final dialogContext = rootNavigatorKey.currentContext ?? context;
+                        print('Debug FAB: using dialogContext = $dialogContext');
 
-                      // dismiss loading
-                      if (context.mounted) Navigator.of(context).pop();
+                        // dismiss loading if possible
+                        if (Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop();
+                        }
 
-                      await showDialog<void>(
-                        context: dialogContext,
-                        builder: (context) => AlertDialog(
+                        await showDialog<void>(
+                          context: dialogContext,
+                          builder: (context) => AlertDialog(
                           title: const Text('Debug: FCM & Notification'),
                           content: SingleChildScrollView(
                             child: ListBody(
@@ -312,7 +322,14 @@ class _MyAppState extends State<MyApp> {
                             ),
                           ],
                         ),
-                      );
+                          );
+                      } catch (e) {
+                        print('Debug FAB: unexpected error: $e');
+                        // ensure loading is dismissed
+                        try {
+                          if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+                        } catch (_) {}
+                      }
                     },
                   ),
                 ),
