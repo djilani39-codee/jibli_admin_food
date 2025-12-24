@@ -67,9 +67,13 @@ class _MyAppState extends State<MyApp> {
         }
       }
 
-      // Use SmartDialog to reliably show an overlay dialog
-      SmartDialog.show(
-        builder: (_) => AlertDialog(
+      // Use standard showDialog to ensure dialog appears even if SmartDialog
+      // overlay isn't initialized yet (works in TestFlight/devices).
+      if (!context.mounted) return;
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) => AlertDialog(
           title: const Text('Debug: FCM & Notification'),
           content: SingleChildScrollView(
             child: ListBody(
@@ -93,7 +97,7 @@ class _MyAppState extends State<MyApp> {
               child: const Text('Copy'),
               onPressed: () async {
                 await Clipboard.setData(ClipboardData(text: token));
-                SmartDialog.dismiss();
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
@@ -104,13 +108,13 @@ class _MyAppState extends State<MyApp> {
                         token +
                         '\\",\\"priority\\":\\"high\\",\\"notification\\":{\\"title\\":\\"طلب جديد\\",\\"body\\":\\"لديك طلب جديد الآن\\"},\\"data\\":{}}" https://fcm.googleapis.com/fcm/send';
                 await Clipboard.setData(ClipboardData(text: curl));
-                SmartDialog.dismiss();
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: const Text('Send test notification'),
               onPressed: () async {
-                SmartDialog.dismiss();
+                Navigator.of(context).pop();
                 await NotificationSetUp.showLocalNotification(
                   title: 'Test notification',
                   body: 'This is a test notification',
@@ -119,7 +123,7 @@ class _MyAppState extends State<MyApp> {
             ),
             TextButton(
               child: const Text('Close'),
-              onPressed: () => SmartDialog.dismiss(),
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ],
         ),
