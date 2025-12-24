@@ -2,48 +2,33 @@ import UIKit
 import Flutter
 import Firebase
 import UserNotifications
-import FirebaseMessaging
 
-@UIApplicationMain
-@objc class AppDelegate: FlutterAppDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
+@main // تم التحديث هنا لتجنب خطأ التبعية
+@objc class AppDelegate: FlutterAppDelegate {
+  
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    
+    // 1. إعداد Firebase
     FirebaseApp.configure()
-
-    // Set delegates so app can handle notifications when swizzling is disabled
-    UNUserNotificationCenter.current().delegate = self
-    Messaging.messaging().delegate = self
-
-    // Register for remote notifications (APNs)
-    UIApplication.shared.registerForRemoteNotifications()
-
+    
+    // 2. إعداد مفوض الإشعارات (Delegate)
+    if #available(iOS 10.0, *) {
+      UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
+    }
+    
+    // 3. طلب الصلاحية وتسجيل الجهاز في APNs
+    application.registerForRemoteNotifications()
+    
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
+  // 4. معالجة توكن APNs وتمريره لـ Firebase
   override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-    // Forward the token to Firebase Messaging
     Messaging.messaging().apnsToken = deviceToken
-    print("APNs device token registered: \(deviceToken.map { String(format: "%02.2hhx", $0) }.joined())")
     super.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
-  }
-
-  override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-    print("Failed to register for remote notifications: \(error)")
-    super.application(application, didFailToRegisterForRemoteNotificationsWithError: error)
-  }
-
-  // Show notifications when app is in foreground
-  func userNotificationCenter(_ center: UNUserNotificationCenter,
-                              willPresent notification: UNNotification,
-                              withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-    completionHandler([.banner, .sound, .badge])
-  }
-
-  // Optional: handle token refreshs
-  func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-    print("Firebase registration token: \(fcmToken ?? "(null)")")
   }
 }
