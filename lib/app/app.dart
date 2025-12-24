@@ -291,9 +291,8 @@ class _MyAppState extends State<MyApp> {
                     },
                   ),
                 ),
-              ));
-            }
-            return Stack(children: stackChildren);
+                ));
+              return Stack(children: stackChildren);
           },
         );
       }),
