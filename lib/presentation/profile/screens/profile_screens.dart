@@ -14,6 +14,7 @@ import 'package:jibli_admin_food/data/local_data_source/local_data_source.dart';
 import 'package:jibli_admin_food/domain/entity/fast_food_entity/fast_food_response.dart';
 import 'package:jibli_admin_food/presentation/cubit/other_cubit.dart';
 import 'package:jibli_admin_food/utils.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -22,6 +23,10 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Ensure any global SmartDialog overlay is dismissed so taps work
+    try {
+      SmartDialog.dismiss();
+    } catch (_) {}
     FastFoodEntity? user = sl<LocalDataSource>().getValue(LocalDataKeys.user);
 
     return BlocProvider(

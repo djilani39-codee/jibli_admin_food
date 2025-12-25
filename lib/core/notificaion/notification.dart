@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:jibli_admin_food/app/locator.dart';
@@ -173,6 +175,14 @@ class NotificationSetUp {
             body: message.data["body"],
             title: message.data["title"],
           );
+          Fluttertoast.showToast(
+            msg: message.data['body'] ?? message.notification?.body ?? 'لديك إشعار جديد',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: const Color(0xFF222222),
+            textColor: Colors.white,
+            fontSize: 14.0,
+          );
           return;
         }
         showSmartNotification(
@@ -180,10 +190,26 @@ class NotificationSetUp {
           body: message.data["body"],
           title: message.data["title"],
         );
+        Fluttertoast.showToast(
+          msg: message.data['body'] ?? message.notification?.body ?? 'لديك إشعار جديد',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: const Color(0xFF222222),
+          textColor: Colors.white,
+          fontSize: 14.0,
+        );
       } else {
         // If no data payload, still log
         print(
             'onMessage: no data payload. notification=${message.notification?.title}/${message.notification?.body}');
+        Fluttertoast.showToast(
+          msg: message.notification?.body ?? 'لديك إشعار جديد',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: const Color(0xFF222222),
+          textColor: Colors.white,
+          fontSize: 14.0,
+        );
       }
     });
   }

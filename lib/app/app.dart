@@ -266,9 +266,7 @@ class _MyAppState extends State<MyApp> {
                         // TestFlight users can confirm the button worked.
                         try {
                           final preview = token.length > 10 ? token.substring(0, 10) + '...' : token;
-                          ScaffoldMessenger.of(dialogContext).showSnackBar(
-                            SnackBar(content: Text('Token preview: $preview')),
-                          );
+                          smartToast(msg: 'Token preview: $preview');
                         } catch (_) {}
 
                         await showDialog<void>(

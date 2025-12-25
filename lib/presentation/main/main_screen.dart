@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:iconsax/iconsax.dart';
@@ -25,6 +26,49 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.red,
+        child: const Icon(Icons.bug_report),
+        onPressed: () async {
+          try {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Fetching token...'),
+              duration: Duration(seconds: 2),
+            ));
+            final token = await FirebaseMessaging.instance.getToken();
+            if (token != null) {
+              await showDialog<void>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('FCM Token'),
+                  content: SelectableText(token!),
+                  actions: [
+                    TextButton(
+                        onPressed: () async {
+                        await Clipboard.setData(ClipboardData(text: token!));
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Copy & Close'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('Token not available'),
+              ));
+            }
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Error fetching token: $e'),
+            ));
+          }
+        },
+      ),
       body: Stack(
         alignment: Alignment(0, 0.87.dp),
         children: [
@@ -96,11 +140,51 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                       InkWell(
                         onTap: () async {
-                          print(await FirebaseMessaging.instance.getToken());
-                          context
-                              .read<BottomNavigationCubit>()
-                              .controller
-                              .jumpToPage(2);
+                          // Fetch token and show immediate feedback so TestFlight users
+                          // can copy it without relying on the debug FAB.
+                          String? token;
+                          try {
+                            token = await FirebaseMessaging.instance.getToken();
+                            final preview = token != null && token.length > 10
+                                ? token.substring(0, 10) + '...'
+                                : (token ?? 'N/A');
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Token preview: $preview')),
+                              );
+                            }
+                            if (token != null && context.mounted) {
+                              await showDialog<void>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('FCM Token'),
+                                  content: SelectableText(token!),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () async {
+                                        await Clipboard.setData(
+                                            ClipboardData(text: token!));
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Copy & Close'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('Close'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Error: $e')));
+                            }
+                          }
+
+                          // proceed to profile page as before
+                          context.read<BottomNavigationCubit>().controller.jumpToPage(2);
                           context.read<BottomNavigationCubit>().changeTap(2);
                         },
                         child: NavItems(
