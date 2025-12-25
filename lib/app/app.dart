@@ -225,125 +225,31 @@ class _MyAppState extends State<MyApp> {
                       child: const Icon(Icons.bug_report),
                       backgroundColor: Colors.red,
                       onPressed: () async {
-                        print('Debug FAB: pressed');
-                        if (Platform.isIOS) {
-                          String? apnsToken = await FirebaseMessaging.instance.getAPNSToken();
-                          if (apnsToken == null || apnsToken.isEmpty) {
-                            print('Waiting for APNs token...');
-                            await Future.delayed(const Duration(seconds: 3));
-                          }
-                        }
-                        // immediate visual feedback: show loading dialog
-                        if (!context.mounted) {
-                          print('Debug FAB: context not mounted');
-                          return;
-                        }
-                        showDialog<void>(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (_) => const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-
-                        String token = '';
-                        try {
-                          // Try cached token first
-                          token = sl<LocalDataSource>().getValue(LocalDataKeys.fcmToken) ?? '';
-                          print('Debug FAB: cached token = $token');
-                          if (token.isEmpty || token == 'N/A') {
-                            try {
-                              token = await FirebaseMessaging.instance.getToken() ?? 'N/A';
-                              print('Debug FAB: fetched token = $token');
-                            } catch (e) {
-                              print('Debug FAB: error fetching token: $e');
-                              token = 'N/A';
-                            }
-                          }
-
-                          // Prefer root navigator context if available (works with GoRouter),
-                          // fallback to current context.
-                          final dialogContext = rootNavigatorKey.currentContext ?? context;
-                          print('Debug FAB: using dialogContext = $dialogContext');
-
-                          // dismiss loading if possible
-                          if (Navigator.of(context).canPop()) {
-                            Navigator.of(context).pop();
-                          }
-
-                          // show a quick preview using smartToast
-                          try {
-                            final preview = token.length > 10 ? token.substring(0, 10) + '...' : token;
-                            smartToast(msg: 'Token preview: $preview');
-                          } catch (_) {}
-
-                          await showDialog<void>(
-                            context: dialogContext,
-                            builder: (context) => AlertDialog(
-                              title: const Text('Debug: FCM & Notification'),
-                              content: SingleChildScrollView(
-                                child: ListBody(
-                                  children: [
-                                    Text('FCM token:'),
-                                    SelectableText(token),
-                                    SizedBox(height: 12),
-                                    Text(
-                                        'cURL (استبدل SERVER_KEY بالقيمة الخاصة بك):',
-                                        style:
-                                            TextStyle(fontWeight: FontWeight.w600)),
-                                    SizedBox(height: 6),
-                                    SelectableText(
-                                      'curl -X POST -H "Authorization: key=SERVER_KEY" -H "Content-Type: application/json" -d "{\\"to\\":\\"' +
-                                          token +
-                                          '\\",\\"priority\\":\\"high\\",\\"notification\\":{\\"title\\":\\"طلب جديد\\",\\"body\\":\\"لديك طلب جديد الآن\\"},\\"data\\":{}}" https://fcm.googleapis.com/fcm/send',
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: const Text('Copy'),
-                                  onPressed: () async {
-                                    await Clipboard.setData(
-                                        ClipboardData(text: token));
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                                TextButton(
-                                  child: const Text('Copy cURL'),
-                                  onPressed: () async {
-                                    final curl =
-                                        'curl -X POST -H "Authorization: key=SERVER_KEY" -H "Content-Type: application/json" -d "{\\"to\\":\\"' +
-                                            token +
-                                            '\\",\\"priority\\":\\"high\\",\\"notification\\":{\\"title\\":\\"طلب جديد\\",\\"body\\":\\"لديك طلب جديد الآن\\"},\\"data\\":{}}" https://fcm.googleapis.com/fcm/send';
-                                    await Clipboard.setData(
-                                        ClipboardData(text: curl));
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                                TextButton(
-                                  child: const Text('Send test notification'),
-                                  onPressed: () async {
-                                    Navigator.of(context).pop();
-                                    await NotificationSetUp.showLocalNotification(
-                                      title: 'Test notification',
-                                      body: 'This is a test notification',
-                                    );
-                                  },
-                                ),
-                                TextButton(
-                                  child: const Text('Close'),
-                                  onPressed: () => Navigator.of(context).pop(),
-                                ),
-                              ],
-                            ),
+                        // 1. إظهار تنبيه للمستخدم بالانتظار
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("جاري الاتصال بخادم APNs... انتظر لحظة")),
                           );
-                        } catch (e) {
-                          print('Debug FAB: unexpected error: $e');
-                          // ensure loading is dismissed
-                          try {
-                            if (Navigator.of(context).canPop()) Navigator.of(context).pop();
-                          } catch (_) {}
+                        }
+
+                        String? apnsToken;
+                        // 2. محاولة جلب التوكن من أبل لمدة 10 ثوانٍ (محاولة كل ثانية)
+                        for (int i = 0; i < 10; i++) {
+                          apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+                          if (apnsToken != null) break;
+                          await Future.delayed(const Duration(seconds: 1));
+                        }
+
+                        if (apnsToken != null) {
+                          String? fcmToken = await FirebaseMessaging.instance.getToken();
+                          if (fcmToken != null) {
+                            final dialogContext = rootNavigatorKey.currentContext ?? context;
+                            showTokenDialog(dialogContext, fcmToken);
+                          }
+                        } else {
+                          final dialogContext = rootNavigatorKey.currentContext ?? context;
+                          showTokenDialog(dialogContext,
+                              "فشل: APNS Token غير جاهز. تأكد من اتصال الإنترنت والموافقة على الإشعارات.");
                         }
                       },
                     ),

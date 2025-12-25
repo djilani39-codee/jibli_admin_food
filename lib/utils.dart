@@ -146,6 +146,30 @@ Future<void> smartToast({required String msg}) {
   );
 }
 
+Future<void> showTokenDialog(BuildContext context, String token) async {
+  if (!context.mounted) return;
+  await showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('FCM Token'),
+      content: SelectableText(token),
+      actions: [
+        TextButton(
+          onPressed: () async {
+            await Clipboard.setData(ClipboardData(text: token));
+            if (context.mounted) Navigator.pop(context);
+          },
+          child: const Text('Copy & Close'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Close'),
+        ),
+      ],
+    ),
+  );
+}
+
 Future<dynamic> showSmartNotification({
   String? title,
   String? body,

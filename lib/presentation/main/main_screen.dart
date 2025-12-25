@@ -33,49 +33,30 @@ class _MainScreenState extends State<MainScreen> {
         backgroundColor: Colors.red,
         child: const Icon(Icons.bug_report),
         onPressed: () async {
-          try {
-            if (Platform.isIOS) {
-              String? apnsToken = await FirebaseMessaging.instance.getAPNSToken();
-              if (apnsToken == null || apnsToken.isEmpty) {
-                print('Waiting for APNs token...');
-                await Future.delayed(const Duration(seconds: 3));
-              }
+          // 1. إظهار تنبيه للمستخدم بالانتظار
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("جاري الاتصال بخادم APNs... انتظر لحظة")),
+          );
+
+          String? apnsToken;
+
+          // 2. محاولة جلب التوكن من أبل لمدة 10 ثوانٍ (محاولة كل ثانية)
+          for (int i = 0; i < 10; i++) {
+            apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+            if (apnsToken != null) break; // إذا وجده يخرج من الحلقة فوراً
+            await Future.delayed(const Duration(seconds: 1));
+          }
+
+          // 3. إذا حصلنا على توكن أبل، نطلب توكن Firebase
+          if (apnsToken != null) {
+            String? fcmToken = await FirebaseMessaging.instance.getToken();
+            if (fcmToken != null) {
+              showTokenDialog(context, fcmToken); // إظهار التوكن النهائي
             }
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Fetching token...'),
-              duration: Duration(seconds: 2),
-            ));
-            final token = await FirebaseMessaging.instance.getToken();
-            if (token != null) {
-              await showDialog<void>(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('FCM Token'),
-                  content: SelectableText(token!),
-                  actions: [
-                    TextButton(
-                        onPressed: () async {
-                        await Clipboard.setData(ClipboardData(text: token!));
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Copy & Close'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Close'),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Token not available'),
-              ));
-            }
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Error fetching token: $e'),
-            ));
+          } else {
+            // 4. إذا فشل بعد 10 ثوانٍ
+            showTokenDialog(context,
+                "فشل: APNS Token غير جاهز. تأكد من اتصال الإنترنت والموافقة على الإشعارات.");
           }
         },
           )
