@@ -1,6 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:jibli_admin_food/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
@@ -87,7 +87,7 @@ class _MainScreenState extends State<MainScreen> {
                     side: BorderSide(
                       width: 1,
                       strokeAlign: BorderSide.strokeAlignOutside,
-                      color: Colors.black.withOpacity(0.10000000149011612),
+                      color: Color.fromRGBO(0, 0, 0, 0.1),
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
