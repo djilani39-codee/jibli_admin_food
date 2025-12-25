@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -214,133 +215,141 @@ class _MyAppState extends State<MyApp> {
           builder: (context, child) {
             final dialog = FlutterSmartDialog.init()(context, child);
             final stackChildren = <Widget>[dialog];
-              stackChildren.add(Positioned(
-                right: 16,
-                bottom: 16,
-                child: SafeArea(
-                  child: FloatingActionButton(
-                    heroTag: 'debug_notify',
-                    child: const Icon(Icons.bug_report),
-                    backgroundColor: Colors.red,
-                    onPressed: () async {
-                      print('Debug FAB: pressed');
-                      // immediate visual feedback: show loading dialog
-                      if (!context.mounted) {
-                        print('Debug FAB: context not mounted');
-                        return;
-                      }
-                      showDialog<void>(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (_) => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-
-                      String token = '';
-                      try {
-                        // Try cached token first
-                        token = sl<LocalDataSource>().getValue(LocalDataKeys.fcmToken) ?? '';
-                        print('Debug FAB: cached token = $token');
-                        if (token.isEmpty || token == 'N/A') {
-                          try {
-                            token = await FirebaseMessaging.instance.getToken() ?? 'N/A';
-                            print('Debug FAB: fetched token = $token');
-                          } catch (e) {
-                            print('Debug FAB: error fetching token: $e');
-                            token = 'N/A';
+              if (kDebugMode) {
+                stackChildren.add(Positioned(
+                  right: 16,
+                  bottom: 16,
+                  child: SafeArea(
+                    child: FloatingActionButton(
+                      heroTag: 'debug_notify',
+                      child: const Icon(Icons.bug_report),
+                      backgroundColor: Colors.red,
+                      onPressed: () async {
+                        print('Debug FAB: pressed');
+                        if (Platform.isIOS) {
+                          String? apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+                          if (apnsToken == null || apnsToken.isEmpty) {
+                            print('Waiting for APNs token...');
+                            await Future.delayed(const Duration(seconds: 3));
                           }
                         }
-
-                        // Prefer root navigator context if available (works with GoRouter),
-                        // fallback to current context.
-                        final dialogContext = rootNavigatorKey.currentContext ?? context;
-                        print('Debug FAB: using dialogContext = $dialogContext');
-
-                        // dismiss loading if possible
-                        if (Navigator.of(context).canPop()) {
-                          Navigator.of(context).pop();
+                        // immediate visual feedback: show loading dialog
+                        if (!context.mounted) {
+                          print('Debug FAB: context not mounted');
+                          return;
                         }
+                        showDialog<void>(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_) => const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
 
-                        // show a quick SnackBar with a short token preview so
-                        // TestFlight users can confirm the button worked.
+                        String token = '';
                         try {
-                          final preview = token.length > 10 ? token.substring(0, 10) + '...' : token;
-                          smartToast(msg: 'Token preview: $preview');
-                        } catch (_) {}
+                          // Try cached token first
+                          token = sl<LocalDataSource>().getValue(LocalDataKeys.fcmToken) ?? '';
+                          print('Debug FAB: cached token = $token');
+                          if (token.isEmpty || token == 'N/A') {
+                            try {
+                              token = await FirebaseMessaging.instance.getToken() ?? 'N/A';
+                              print('Debug FAB: fetched token = $token');
+                            } catch (e) {
+                              print('Debug FAB: error fetching token: $e');
+                              token = 'N/A';
+                            }
+                          }
 
-                        await showDialog<void>(
-                          context: dialogContext,
-                          builder: (context) => AlertDialog(
-                          title: const Text('Debug: FCM & Notification'),
-                          content: SingleChildScrollView(
-                            child: ListBody(
-                              children: [
-                                Text('FCM token:'),
-                                SelectableText(token),
-                                SizedBox(height: 12),
-                                Text(
-                                    'cURL (استبدل SERVER_KEY بالقيمة الخاصة بك):',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w600)),
-                                SizedBox(height: 6),
-                                SelectableText(
-                                  'curl -X POST -H "Authorization: key=SERVER_KEY" -H "Content-Type: application/json" -d "{\\"to\\":\\"' +
-                                      token +
-                                      '\\",\\"priority\\":\\"high\\",\\"notification\\":{\\"title\\":\\"طلب جديد\\",\\"body\\":\\"لديك طلب جديد الآن\\"},\\"data\\":{}}" https://fcm.googleapis.com/fcm/send',
+                          // Prefer root navigator context if available (works with GoRouter),
+                          // fallback to current context.
+                          final dialogContext = rootNavigatorKey.currentContext ?? context;
+                          print('Debug FAB: using dialogContext = $dialogContext');
+
+                          // dismiss loading if possible
+                          if (Navigator.of(context).canPop()) {
+                            Navigator.of(context).pop();
+                          }
+
+                          // show a quick preview using smartToast
+                          try {
+                            final preview = token.length > 10 ? token.substring(0, 10) + '...' : token;
+                            smartToast(msg: 'Token preview: $preview');
+                          } catch (_) {}
+
+                          await showDialog<void>(
+                            context: dialogContext,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Debug: FCM & Notification'),
+                              content: SingleChildScrollView(
+                                child: ListBody(
+                                  children: [
+                                    Text('FCM token:'),
+                                    SelectableText(token),
+                                    SizedBox(height: 12),
+                                    Text(
+                                        'cURL (استبدل SERVER_KEY بالقيمة الخاصة بك):',
+                                        style:
+                                            TextStyle(fontWeight: FontWeight.w600)),
+                                    SizedBox(height: 6),
+                                    SelectableText(
+                                      'curl -X POST -H "Authorization: key=SERVER_KEY" -H "Content-Type: application/json" -d "{\\"to\\":\\"' +
+                                          token +
+                                          '\\",\\"priority\\":\\"high\\",\\"notification\\":{\\"title\\":\\"طلب جديد\\",\\"body\\":\\"لديك طلب جديد الآن\\"},\\"data\\":{}}" https://fcm.googleapis.com/fcm/send',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  child: const Text('Copy'),
+                                  onPressed: () async {
+                                    await Clipboard.setData(
+                                        ClipboardData(text: token));
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text('Copy cURL'),
+                                  onPressed: () async {
+                                    final curl =
+                                        'curl -X POST -H "Authorization: key=SERVER_KEY" -H "Content-Type: application/json" -d "{\\"to\\":\\"' +
+                                            token +
+                                            '\\",\\"priority\\":\\"high\\",\\"notification\\":{\\"title\\":\\"طلب جديد\\",\\"body\\":\\"لديك طلب جديد الآن\\"},\\"data\\":{}}" https://fcm.googleapis.com/fcm/send';
+                                    await Clipboard.setData(
+                                        ClipboardData(text: curl));
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text('Send test notification'),
+                                  onPressed: () async {
+                                    Navigator.of(context).pop();
+                                    await NotificationSetUp.showLocalNotification(
+                                      title: 'Test notification',
+                                      body: 'This is a test notification',
+                                    );
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text('Close'),
+                                  onPressed: () => Navigator.of(context).pop(),
                                 ),
                               ],
                             ),
-                          ),
-                          actions: [
-                            TextButton(
-                              child: const Text('Copy'),
-                              onPressed: () async {
-                                await Clipboard.setData(
-                                    ClipboardData(text: token));
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            TextButton(
-                              child: const Text('Copy cURL'),
-                              onPressed: () async {
-                                final curl =
-                                    'curl -X POST -H "Authorization: key=SERVER_KEY" -H "Content-Type: application/json" -d "{\\"to\\":\\"' +
-                                        token +
-                                        '\\",\\"priority\\":\\"high\\",\\"notification\\":{\\"title\\":\\"طلب جديد\\",\\"body\\":\\"لديك طلب جديد الآن\\"},\\"data\\":{}}" https://fcm.googleapis.com/fcm/send';
-                                await Clipboard.setData(
-                                    ClipboardData(text: curl));
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            TextButton(
-                              child: const Text('Send test notification'),
-                              onPressed: () async {
-                                Navigator.of(context).pop();
-                                await NotificationSetUp.showLocalNotification(
-                                  title: 'Test notification',
-                                  body: 'This is a test notification',
-                                );
-                              },
-                            ),
-                            TextButton(
-                              child: const Text('Close'),
-                              onPressed: () => Navigator.of(context).pop(),
-                            ),
-                          ],
-                        ),
                           );
-                      } catch (e) {
-                        print('Debug FAB: unexpected error: $e');
-                        // ensure loading is dismissed
-                        try {
-                          if (Navigator.of(context).canPop()) Navigator.of(context).pop();
-                        } catch (_) {}
-                      }
-                    },
+                        } catch (e) {
+                          print('Debug FAB: unexpected error: $e');
+                          // ensure loading is dismissed
+                          try {
+                            if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+                          } catch (_) {}
+                        }
+                      },
+                    ),
                   ),
-                ),
                 ));
+              }
               return Stack(children: stackChildren);
           },
         );

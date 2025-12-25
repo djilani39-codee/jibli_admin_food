@@ -1,5 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -26,11 +28,19 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: kDebugMode
+          ? FloatingActionButton(
         backgroundColor: Colors.red,
         child: const Icon(Icons.bug_report),
         onPressed: () async {
           try {
+            if (Platform.isIOS) {
+              String? apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+              if (apnsToken == null || apnsToken.isEmpty) {
+                print('Waiting for APNs token...');
+                await Future.delayed(const Duration(seconds: 3));
+              }
+            }
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text('Fetching token...'),
               duration: Duration(seconds: 2),
@@ -68,7 +78,8 @@ class _MainScreenState extends State<MainScreen> {
             ));
           }
         },
-      ),
+          )
+          : null,
       body: Stack(
         alignment: Alignment(0, 0.87.dp),
         children: [
