@@ -4,7 +4,7 @@ import Firebase
 import UserNotifications
 
 @main // تم التحديث هنا لتجنب خطأ التبعية
-@objc class AppDelegate: FlutterAppDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
+@objc class AppDelegate: FlutterAppDelegate, MessagingDelegate {
   
   override func application(
     _ application: UIApplication,
@@ -16,7 +16,7 @@ import UserNotifications
     
     // 2. إعداد مفوض الإشعارات (Delegate) وطلب الصلاحيات
     if #available(iOS 10.0, *) {
-      UNUserNotificationCenter.current().delegate = self
+      UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
       UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
         if let error = error {
           print("UNUserNotificationCenter requestAuthorization error: \(error)")
