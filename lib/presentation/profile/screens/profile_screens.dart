@@ -16,6 +16,7 @@ import 'package:jibli_admin_food/presentation/cubit/other_cubit.dart';
 import 'package:jibli_admin_food/utils.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:flutter/services.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -28,6 +29,7 @@ class ProfileScreen extends StatelessWidget {
       SmartDialog.dismiss();
     } catch (_) {}
     FastFoodEntity? user = sl<LocalDataSource>().getValue(LocalDataKeys.user);
+    final savedTopic = sl<LocalDataSource>().getValue<String>(LocalDataKeys.restaurantTopic);
 
     return BlocProvider(
       create: (context) => OtherCubit(sl()),
@@ -160,6 +162,42 @@ class ProfileScreen extends StatelessWidget {
                             ),
                           ),
 
+                          SizedBox(
+                            height: 1.h,
+                          ),
+                          ListTile(
+                            onTap: () async {
+                              final topic = savedTopic ??
+                                  user.markets?.first.topicNotification ??
+                                  'غير متوفر';
+                              await Clipboard.setData(ClipboardData(text: topic));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('تم نسخ التوبيك: $topic')),
+                              );
+                            },
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            tileColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 0),
+
+                            title: Text(
+                              "توبيك الإشعارات",
+                              style: TextStyle(
+                                  fontSize: 14.dp, fontWeight: FontWeight.w700),
+                            ),
+                            subtitle: Text(
+                              savedTopic ?? user.markets?.first.topicNotification ??
+                                  'غير متوفر',
+                              style: TextStyle(
+                                  fontSize: 12.dp, fontWeight: FontWeight.w300),
+                            ),
+                            trailing: const Icon(
+                              Icons.copy,
+                              size: 20,
+                              color: AppTheme.gray,
+                            ),
+                          ),
                           SizedBox(
                             height: 1.h,
                           ),

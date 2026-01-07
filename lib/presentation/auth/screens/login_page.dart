@@ -40,15 +40,14 @@ class login extends HookWidget {
             logedIn: () async {
               FastFoodEntity? user =
                   sl<LocalDataSource>().getValue(LocalDataKeys.user);
-              await FirebaseMessaging.instance
-                  .subscribeToTopic(
-                      user?.markets?.first.topicNotification ?? "jibl")
-                  .then(
-                (value) {
-                  context.read<BottomNavigationCubit>().changeTap(0);
-                  context.goNamed(Routes.main.name);
-                },
+              final topic = user?.markets?.first.topicNotification ?? "jibl";
+              await FirebaseMessaging.instance.subscribeToTopic(topic);
+              await sl<LocalDataSource>().setValue(LocalDataKeys.restaurantTopic, topic);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('تم الاشتراك في التوبيك: $topic')),
               );
+              context.read<BottomNavigationCubit>().changeTap(0);
+              context.goNamed(Routes.main.name);
             },
           );
         },

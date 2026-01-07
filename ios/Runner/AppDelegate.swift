@@ -1,9 +1,10 @@
-import UIKit
+﻿import UIKit
 import Flutter
 import FirebaseCore // استيراد أساس فايربيز
+import UserNotifications
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, UNUserNotificationCenterDelegate {
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -14,11 +15,21 @@ import FirebaseCore // استيراد أساس فايربيز
     // 2. تسجيل إضافات فلاتر (تلقائياً)
     GeneratedPluginRegistrant.register(with: self)
     
-    // 3. تعيين المفوض للإشعارات (مدمج في FlutterAppDelegate)
+    // 3. تعيين المفوض للإشعارات
     if #available(iOS 10.0, *) {
-      UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
+      UNUserNotificationCenter.current().delegate = self
     }
 
+    // 4. تسجيل للإشعارات عن بعد
+    application.registerForRemoteNotifications()
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  @available(iOS 10.0, *)
+  func userNotificationCenter(_ center: UNUserNotificationCenter,
+                              willPresent notification: UNNotification,
+                              withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    completionHandler([.alert, .sound, .badge])
   }
 }
