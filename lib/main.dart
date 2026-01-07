@@ -247,7 +247,7 @@ import 'app/locator.dart' as di;
 ReceivePort port = ReceivePort();
 
 @pragma('vm:entry-point')
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Initialize Firebase in background isolate
   await Firebase.initializeApp();
   
@@ -344,7 +344,15 @@ void main() async {
   try {
     // نحدد مهلة زمنية أو نتركه يعمل، وإذا فشل لا يعطل التطبيق
     await Firebase.initializeApp().timeout(const Duration(seconds: 5));
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    // Ensure iOS shows notifications in foreground (banner, sound, badge)
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
     await NotificationSetUp.init();
       // طباعة توكن FCM بسرعة لتسهيل الاختبار (سيظهر في سجلات الـ console)
       try {

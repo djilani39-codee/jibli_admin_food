@@ -48,6 +48,41 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     onListen();
+
+    // FCM listeners to handle notifications in different app states
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      try {
+        print('FCM onMessage (foreground): ${message.notification?.title}');
+        // Optionally show local notification or in-app banner
+        NotificationSetUp.showLocalNotification(
+          title: message.notification?.title ?? message.data['title'],
+          body: message.notification?.body ?? message.data['body'],
+          payload: message.data.toString(),
+        );
+      } catch (e) {
+        print('Error handling onMessage: $e');
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      try {
+        print('FCM onMessageOpenedApp: opened from background');
+        _navigateToScreen(message);
+      } catch (e) {
+        print('Error handling onMessageOpenedApp: $e');
+      }
+    });
+
+    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null) {
+        try {
+          print('FCM getInitialMessage: opened from terminated state');
+          _navigateToScreen(message);
+        } catch (e) {
+          print('Error handling getInitialMessage: $e');
+        }
+      }
+    });
     // Show debug dialog without blocking the UI (show also in TestFlight/devices)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showDebugDialog();
@@ -168,6 +203,63 @@ class _MyAppState extends State<MyApp> {
         print('Error in port.listen: $e');
       }
     });
+  }
+
+  void _navigateToScreen(RemoteMessage message) {
+    try {
+      final String? type = message.data['type']?.toString();
+      final String? orderId = message.data['id']?.toString();
+
+      if (type == 'order' && orderId != null && orderId.isNotEmpty) {
+        // Prefer to show Orders tab in the main screen
+        try {
+          sl<BottomNavigationCubit>().controller.jumpToPage(0);
+          sl<BottomNavigationCubit>().changeTap(0);
+        } catch (_) {}
+
+        // Attempt to navigate to a dedicated order route if available
+        try {
+          router.go('/order_details?id=$orderId');
+          return;
+        } catch (_) {}
+
+        // Fallback: show an in-app dialog with quick info
+        try {
+          final ctx = rootNavigatorKey.currentContext ?? context;
+          if (ctx.mounted) {
+            showDialog<void>(
+              context: ctx,
+              builder: (c) => AlertDialog(
+                title: const Text('فتح الطلب'),
+                content: Text('عرض تفاصيل الطلب #$orderId'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(c).pop(),
+                    child: const Text('إغلاق'),
+                  ),
+                ],
+              ),
+            );
+          }
+        } catch (e) {
+          print('Fallback dialog failed: $e');
+        }
+      } else {
+        // Default fallback: go to notifications or main
+        try {
+          router.go('/notifications');
+        } catch (_) {
+          try {
+            sl<BottomNavigationCubit>().controller.jumpToPage(0);
+            sl<BottomNavigationCubit>().changeTap(0);
+          } catch (e) {
+            print('Default navigation fallback failed: $e');
+          }
+        }
+      }
+    } catch (e) {
+      print('Error in _navigateToScreen: $e');
+    }
   }
 
   @override
