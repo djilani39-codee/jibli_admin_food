@@ -58,7 +58,7 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D7000001294A63AB00263BE5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		876543210FEDCBA087654321 /* alarm.caf */ = {isa = PBXFileReference; lastKnownFileType = file.caf; path = alarm.caf; sourceTree = "<group>"; };
+		876543210FEDCBA087654321 /* alarm.caf */ = {isa = PBXFileReference; lastKnownFileType = file.caf; path = Runner/alarm.caf; sourceTree = "SOURCE_ROOT"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
