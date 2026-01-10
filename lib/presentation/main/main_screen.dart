@@ -52,39 +52,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: kDebugMode
-          ? FloatingActionButton(
-        backgroundColor: Colors.red,
-        child: const Icon(Icons.bug_report),
-        onPressed: () async {
-          // 1. إظهار تنبيه للمستخدم بالانتظار
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("جاري الاتصال بخادم APNs... انتظر لحظة")),
-          );
-
-          String? apnsToken;
-
-          // 2. محاولة جلب التوكن من أبل لمدة 10 ثوانٍ (محاولة كل ثانية)
-          for (int i = 0; i < 10; i++) {
-            apnsToken = await FirebaseMessaging.instance.getAPNSToken();
-            if (apnsToken != null) break; // إذا وجده يخرج من الحلقة فوراً
-            await Future.delayed(const Duration(seconds: 1));
-          }
-
-          // 3. إذا حصلنا على توكن أبل، نطلب توكن Firebase
-          if (apnsToken != null) {
-            String? fcmToken = await FirebaseMessaging.instance.getToken();
-            if (fcmToken != null) {
-              showTokenDialog(context, fcmToken); // إظهار التوكن النهائي
-            }
-          } else {
-            // 4. إذا فشل بعد 10 ثوانٍ
-            showTokenDialog(context,
-                "فشل: APNS Token غير جاهز. تأكد من اتصال الإنترنت والموافقة على الإشعارات.");
-          }
-        },
-          )
-          : null,
+      floatingActionButton: null,
       body: Stack(
         alignment: Alignment(0, 0.87.dp),
         children: [
@@ -155,51 +123,8 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                       ),
                       InkWell(
-                        onTap: () async {
-                          // Fetch token and show immediate feedback so TestFlight users
-                          // can copy it without relying on the debug FAB.
-                          String? token;
-                          try {
-                            token = await FirebaseMessaging.instance.getToken();
-                            final preview = token != null && token.length > 10
-                                ? token.substring(0, 10) + '...'
-                                : (token ?? 'N/A');
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Token preview: $preview')),
-                              );
-                            }
-                            if (token != null && context.mounted) {
-                              await showDialog<void>(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('FCM Token'),
-                                  content: SelectableText(token!),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () async {
-                                        await Clipboard.setData(
-                                            ClipboardData(text: token!));
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('Copy & Close'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('Close'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                          } catch (e) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Error: $e')));
-                            }
-                          }
-
-                          // proceed to profile page as before
+                        onTap: () {
+                          // Navigate to profile tab without showing FCM token
                           context.read<BottomNavigationCubit>().controller.jumpToPage(2);
                           context.read<BottomNavigationCubit>().changeTap(2);
                         },

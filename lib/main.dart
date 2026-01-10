@@ -263,7 +263,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     
     // Initialize the plugin in background
     const AndroidInitializationSettings androidInitializationSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/launcher_icon');
     const DarwinInitializationSettings iosInitializationSettings =
         DarwinInitializationSettings();
     
@@ -280,6 +280,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     String body = message.notification?.body ?? message.data['body'] ?? '';
     
     // Show notification in background
+    // Disabled to avoid duplicate notifications: the system may already
+    // display the notification from the FCM "notification" payload.
+    /*
     await _localNotifications.show(
       message.hashCode,
       title,
@@ -293,7 +296,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           priority: Priority.high,
           ongoing: false,
           autoCancel: true,
-          icon: '@mipmap/ic_launcher',
+          icon: '@mipmap/launcher_icon',
           playSound: true,
           enableVibration: true,
           enableLights: true,
@@ -312,6 +315,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     );
     
     print('Background: Showing notification - title=$title, body=$body');
+    */
   } catch (e) {
     print('Background handler notification error: $e');
   }

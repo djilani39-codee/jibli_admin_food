@@ -47,6 +47,19 @@
 		<true/>
 		<key>FirebaseAppDelegateProxyEnabled</key>
 		<true/>
+		<!-- Privacy usage descriptions required by App Store -->
+		<key>NSCameraUsageDescription</key>
+		<string>التطبيق يحتاج الوصول للكاميرا لالتقاط صور المنتجات أو البروفايل</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>التطبيق يحتاج الوصول لمكتبة الصور لاختيار صور المنتجات أو البروفايل</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>التطبيق يحتاج الوصول للمايكروفون لتسجيل الصوت عند الحاجة</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>التطبيق قد يستخدم الموقع لتحسين دقة الخدمات أو الطلبات حسب الموقع</string>
+		<key>NSBluetoothAlwaysUsageDescription</key>
+		<string>قد يحتاج التطبيق الوصول إلى البلوتوث للاتصال بأجهزة محلية إذا لزم</string>
+		<key>NSUserTrackingUsageDescription</key>
+		<string>التطبيق قد يستخدم بيانات التتبع لتخصيص الإعلانات وتحليل الأداء (يمكن تعطيله إذا لم تستخدم)</string>
 		<key>UIBackgroundModes</key>
 		<array>
 			<string>fetch</string>

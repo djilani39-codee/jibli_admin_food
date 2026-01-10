@@ -14,7 +14,9 @@ import 'package:jibli_admin_food/data/local_data_source/local_data_source.dart';
 import 'package:jibli_admin_food/domain/entity/fast_food_entity/fast_food_response.dart';
 import 'package:jibli_admin_food/presentation/cubit/other_cubit.dart';
 import 'package:jibli_admin_food/utils.dart';
+import 'dart:io';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter/services.dart';
 import 'package:shimmer/shimmer.dart';
@@ -98,6 +100,63 @@ class ProfileScreen extends StatelessWidget {
                           SizedBox(
                             height: 1.h,
                           ),
+                          // Account deletion request (Apple App Store requirement)
+                          // Show only on iOS devices as per request
+                          if (Platform.isIOS) ...[
+                            ListTile(
+                              onTap: () async {
+                                final String ownerEmail = 'djilanibenhacine5@gmail.com';
+                                final Uri emailLaunchUri = Uri(
+                                  scheme: 'mailto',
+                                  path: ownerEmail,
+                                  queryParameters: {
+                                      'subject': 'طلب حذف الحساب',
+                                      'body': 'مرحباً،\n\nأود طلب حذف حسابي ومراجعة بياناتي. الرجاء المساعدة.\n\nمطعم: ${user.markets?.first.marketName ?? ''}\nمعرف المستخدم: ',
+                                  },
+                                );
+
+                                try {
+                                  if (!await launchUrl(emailLaunchUri)) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('تعذر فتح تطبيق البريد. الرجاء إرسال بريد إلى support@yourdomain.com')),
+                                      );
+                                    }
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('حدث خطأ: $e')),
+                                    );
+                                  }
+                                }
+                              },
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              tileColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 0),
+
+                              title: Text(
+                                "طلب حذف الحساب",
+                                style: TextStyle(
+                                    fontSize: 14.dp, fontWeight: FontWeight.w700),
+                              ),
+                              subtitle: Text(
+                                'سوف يفتح تطبيق البريد لإرسال طلب حذف الحساب إلى مدير النظام',
+                                style: TextStyle(
+                                    fontSize: 12.dp, fontWeight: FontWeight.w300),
+                              ),
+                              trailing: const Icon(
+                                Icons.email,
+                                size: 20,
+                                color: AppTheme.gray,
+                              ),
+                            ),
+                            SizedBox(height: 1.h),
+                          ] else ...[
+                            // On non-iOS platforms we hide the option
+                          ],
                           ListTile(
                             onTap: () async {},
                             shape: RoundedRectangleBorder(
@@ -165,39 +224,7 @@ class ProfileScreen extends StatelessWidget {
                           SizedBox(
                             height: 1.h,
                           ),
-                          ListTile(
-                            onTap: () async {
-                              final topic = savedTopic ??
-                                  user.markets?.first.topicNotification ??
-                                  'غير متوفر';
-                              await Clipboard.setData(ClipboardData(text: topic));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('تم نسخ التوبيك: $topic')),
-                              );
-                            },
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            tileColor: Colors.white,
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 0),
-
-                            title: Text(
-                              "توبيك الإشعارات",
-                              style: TextStyle(
-                                  fontSize: 14.dp, fontWeight: FontWeight.w700),
-                            ),
-                            subtitle: Text(
-                              savedTopic ?? user.markets?.first.topicNotification ??
-                                  'غير متوفر',
-                              style: TextStyle(
-                                  fontSize: 12.dp, fontWeight: FontWeight.w300),
-                            ),
-                            trailing: const Icon(
-                              Icons.copy,
-                              size: 20,
-                              color: AppTheme.gray,
-                            ),
-                          ),
+                          // Notification topic removed from profile
                           SizedBox(
                             height: 1.h,
                           ),

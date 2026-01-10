@@ -75,6 +75,7 @@ dependencies:
   flutter_sizer: ^1.0.4
   dropdown_button2: ^2.3.9
   flutter_smart_dialog: ^4.9.3+2
+  url_launcher: ^6.1.11
   pinput: ^4.0.0
   sms_autofill: ^2.3.0
   image_picker: ^1.0.4

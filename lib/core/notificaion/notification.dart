@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/foundation.dart';
@@ -128,13 +131,63 @@ class NotificationSetUp {
       if (message.data.isNotEmpty) {
         final data = message.data;
 
-        // show local notification using the shared plugin instance
-        await _localNotifications.show(
-          message.hashCode,
-          data['title'] ?? message.notification?.title,
-          data['body'] ?? message.notification?.body,
-          NotificationDetails(
-            android: AndroidNotificationDetails(
+        // If payload contains an image URL, attempt to download and show
+        // a Big Picture style notification on Android.
+        AndroidNotificationDetails androidDetails;
+        try {
+          final String? imageUrl = data['image'] ?? message.notification?.android?.imageUrl?.toString();
+          if (imageUrl != null && imageUrl.isNotEmpty) {
+            // download image to temporary directory
+            final String fileName = 'notif_${DateTime.now().millisecondsSinceEpoch}.png';
+            final tempPath = (await getTemporaryDirectory()).path;
+            final String fullPath = '$tempPath/$fileName';
+            try {
+              await Dio().download(imageUrl, fullPath);
+              final BigPictureStyleInformation bigPictureStyle = BigPictureStyleInformation(
+                FilePathAndroidBitmap(fullPath),
+                contentTitle: data['title'] ?? message.notification?.title,
+                summaryText: data['body'] ?? message.notification?.body,
+              );
+
+              androidDetails = AndroidNotificationDetails(
+                channelId,
+                'High Importance Notifications',
+                channelDescription: 'Notifications for orders and updates',
+                importance: Importance.max,
+                priority: Priority.high,
+                ongoing: false,
+                autoCancel: true,
+                icon: '@mipmap/launcher_icon',
+                playSound: true,
+                enableVibration: true,
+                enableLights: true,
+                sound: RawResourceAndroidNotificationSound(customSoundAndroid),
+                visibility: NotificationVisibility.public,
+                fullScreenIntent: true,
+                styleInformation: bigPictureStyle,
+              );
+            } catch (e) {
+              // download failed - fall back to normal notification
+              androidDetails = AndroidNotificationDetails(
+                channelId,
+                'High Importance Notifications',
+                channelDescription: 'Notifications for orders and updates',
+                importance: Importance.max,
+                priority: Priority.high,
+                ongoing: false,
+                autoCancel: true,
+                icon: '@mipmap/launcher_icon',
+                playSound: true,
+                enableVibration: true,
+                enableLights: true,
+                sound: RawResourceAndroidNotificationSound(customSoundAndroid),
+                visibility: NotificationVisibility.public,
+                fullScreenIntent: true,
+              );
+            }
+          } else {
+            // no image -> regular android details
+            androidDetails = AndroidNotificationDetails(
               channelId, // id
               'High Importance Notifications',
               channelDescription: 'Notifications for orders and updates',
@@ -142,14 +195,42 @@ class NotificationSetUp {
               priority: Priority.high,
               ongoing: false,
               autoCancel: true,
-              icon: '@mipmap/ic_launcher',
+              icon: '@mipmap/launcher_icon',
               playSound: true,
               enableVibration: true,
               enableLights: true,
-              sound: null, // null = use channel default (system sound)
+              sound: RawResourceAndroidNotificationSound(customSoundAndroid),
               visibility: NotificationVisibility.public,
               fullScreenIntent: true,
-            ),
+            );
+          }
+        } catch (e) {
+          // any unexpected error -> use basic android details
+          androidDetails = AndroidNotificationDetails(
+            channelId, // id
+            'High Importance Notifications',
+            channelDescription: 'Notifications for orders and updates',
+            importance: Importance.max,
+            priority: Priority.high,
+            ongoing: false,
+            autoCancel: true,
+            icon: '@mipmap/launcher_icon',
+            playSound: true,
+            enableVibration: true,
+            enableLights: true,
+            sound: RawResourceAndroidNotificationSound(customSoundAndroid),
+            visibility: NotificationVisibility.public,
+            fullScreenIntent: true,
+          );
+        }
+
+        // show notification using the computed androidDetails
+        await _localNotifications.show(
+          message.hashCode,
+          data['title'] ?? message.notification?.title,
+          data['body'] ?? message.notification?.body,
+          NotificationDetails(
+            android: androidDetails,
             iOS: const DarwinNotificationDetails(
               presentAlert: true,
               presentBadge: true,
@@ -223,8 +304,20 @@ class NotificationSetUp {
       channelId = 'jibli_admin';
     }
 
+    // Ensure a stable channel matching the server-side channel id exists
+    const AndroidNotificationChannel jibliAdminChannel = AndroidNotificationChannel(
+      'jibli_admin', // must match server channel id
+      'High Importance Notifications',
+      description: 'هذه القناة تستخدم لإشعارات الطلبات الجديدة',
+      importance: Importance.max,
+      playSound: true,
+      // sound must reference the raw resource name (without extension)
+      sound: RawResourceAndroidNotificationSound('alarm'),
+    );
+
+    // Also create the existing (possibly debug) channel used locally
     final AndroidNotificationChannel channel = AndroidNotificationChannel(
-      channelId, // id
+      channelId, // id (may include debug suffix in debug builds)
       'High Importance Notifications',
       playSound: true,
       enableVibration: true,
@@ -234,13 +327,15 @@ class NotificationSetUp {
       description: 'إشعارات الطلبات الجديدة - إشعارات عاجلة وسريعة',
     );
 
-    await _localNotifications
+    final androidImpl = _localNotifications
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+            AndroidFlutterLocalNotificationsPlugin>();
+
+    await androidImpl?.createNotificationChannel(jibliAdminChannel);
+    await androidImpl?.createNotificationChannel(channel);
 
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/launcher_icon');
     const DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
       requestSoundPermission: true,
@@ -286,7 +381,7 @@ class NotificationSetUp {
           priority: Priority.high,
           ongoing: false,
           autoCancel: true,
-          icon: '@mipmap/ic_launcher',
+          icon: '@mipmap/launcher_icon',
           playSound: true,
           enableVibration: true,
           // Use custom raw resource sound if available

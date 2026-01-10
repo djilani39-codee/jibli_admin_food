@@ -247,7 +247,8 @@ class _MyAppState extends State<MyApp> {
       } else {
         // Default fallback: go to notifications or main
         try {
-          router.go('/notifications');
+          // '/notifications' route is not defined; navigate to main instead
+          router.go(Routes.main.path);
         } catch (_) {
           try {
             sl<BottomNavigationCubit>().controller.jumpToPage(0);
@@ -307,47 +308,7 @@ class _MyAppState extends State<MyApp> {
           builder: (context, child) {
             final dialog = FlutterSmartDialog.init()(context, child);
             final stackChildren = <Widget>[dialog];
-              if (kDebugMode) {
-                stackChildren.add(Positioned(
-                  right: 16,
-                  bottom: 16,
-                  child: SafeArea(
-                    child: FloatingActionButton(
-                      heroTag: 'debug_notify',
-                      child: const Icon(Icons.bug_report),
-                      backgroundColor: Colors.red,
-                      onPressed: () async {
-                        // 1. إظهار تنبيه للمستخدم بالانتظار
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("جاري الاتصال بخادم APNs... انتظر لحظة")),
-                          );
-                        }
-
-                        String? apnsToken;
-                        // 2. محاولة جلب التوكن من أبل لمدة 10 ثوانٍ (محاولة كل ثانية)
-                        for (int i = 0; i < 10; i++) {
-                          apnsToken = await FirebaseMessaging.instance.getAPNSToken();
-                          if (apnsToken != null) break;
-                          await Future.delayed(const Duration(seconds: 1));
-                        }
-
-                        if (apnsToken != null) {
-                          String? fcmToken = await FirebaseMessaging.instance.getToken();
-                          if (fcmToken != null) {
-                            final dialogContext = rootNavigatorKey.currentContext ?? context;
-                            showTokenDialog(dialogContext, fcmToken);
-                          }
-                        } else {
-                          final dialogContext = rootNavigatorKey.currentContext ?? context;
-                          showTokenDialog(dialogContext,
-                              "فشل: APNS Token غير جاهز. تأكد من اتصال الإنترنت والموافقة على الإشعارات.");
-                        }
-                      },
-                    ),
-                  ),
-                ));
-              }
+              // debug FAB removed
               return Stack(children: stackChildren);
           },
         );
