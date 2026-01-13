@@ -58,8 +58,6 @@
 		<string>التطبيق قد يستخدم الموقع لتحسين دقة الخدمات أو الطلبات حسب الموقع</string>
 		<key>NSBluetoothAlwaysUsageDescription</key>
 		<string>قد يحتاج التطبيق الوصول إلى البلوتوث للاتصال بأجهزة محلية إذا لزم</string>
-		<key>NSUserTrackingUsageDescription</key>
-		<string>التطبيق قد يستخدم بيانات التتبع لتخصيص الإعلانات وتحليل الأداء (يمكن تعطيله إذا لم تستخدم)</string>
 		<key>UIBackgroundModes</key>
 		<array>
 			<string>fetch</string>
