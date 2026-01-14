@@ -5,6 +5,7 @@ enum LocalDataKeys {
   languageKey,
   privacyPolicy,
   notificationInread,
+  notificationsEnabled,
   fcmToken,
   restaurantTopic
 }

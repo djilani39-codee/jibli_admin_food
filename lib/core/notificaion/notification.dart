@@ -18,6 +18,7 @@ import 'package:jibli_admin_food/data/local_data_source/local_data_source.dart';
 import 'package:jibli_admin_food/domain/entity/fast_food_entity/fast_food_response.dart';
 
 import 'package:jibli_admin_food/domain/entity/order_entity/order_entity.dart';
+import 'package:jibli_admin_food/app/router.dart';
 import 'package:jibli_admin_food/presentation/main/blocs/main_navigation_cubi.dart';
 import 'package:jibli_admin_food/presentation/orders/cubits/cubit/order_bloc.dart';
 import 'package:jibli_admin_food/presentation/orders/cubits/order_filter_cubit.dart';
@@ -43,42 +44,49 @@ class NotificationSetUp {
   static init() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     FastFoodEntity? user = sl<LocalDataSource>().getValue(LocalDataKeys.user);
-    
-    // Request notification permissions WITHOUT awaiting (non-blocking)
-    // The permission request will happen in the background
-    requestNotificationPermissions();
-
-    // Enable foreground notifications
-    await messaging.requestPermission(
-      alert: true,
-      announcement: true,
-      badge: true,
-      carPlay: true,
-      criticalAlert: true,
-      provisional: false,
-      sound: true,
-    );
-
-    // Retrieve and persist FCM token
-    try {
-      final String? token = await FirebaseMessaging.instance.getToken();
-      if (token != null) {
-        // save locally for server registration
-        await sl<LocalDataSource>().setValue(LocalDataKeys.fcmToken, token);
-        print('FCM token: $token');
-      }
-    } catch (e) {
-      print('Failed to get FCM token: $e');
-    }
+    // IMPORTANT: Do NOT request permissions or register token automatically.
+    // Push notifications must be optional and require explicit user consent.
+    // Call `NotificationSetUp.enableNotifications()` after the user opts in.
 
     /// background (when user taps notification and app opens)
     FirebaseMessaging.onMessageOpenedApp.listen((event) async {
       try {
         print(
             'onMessageOpenedApp invoked. messageId=${event.messageId}, data=${event.data}, notification=${event.notification != null}');
-        if (sl<BottomNavigationCubit>().state != 0) {
-          sl<BottomNavigationCubit>().controller.jumpToPage(0);
-          sl<BottomNavigationCubit>().changeTap(0);
+
+        if (event.data.isNotEmpty) {
+          try {
+            final data = Map<String, dynamic>.from(event.data);
+            if (data['orders'] is String) {
+              data['orders'] = jsonDecode(data['orders']);
+            }
+            final order = OrderEntity.fromJson(data);
+
+            // Ensure main page is visible then navigate to order details
+            try {
+              sl<BottomNavigationCubit>().controller.jumpToPage(0);
+              sl<BottomNavigationCubit>().changeTap(0);
+            } catch (_) {}
+
+            try {
+              router.go('/order_details?id=${order.id}');
+              return;
+            } catch (_) {}
+
+            // Fallback: add item to ordering list so user can open it manually
+            try {
+              sl<OrderBloc>().pagingController.addItem(order);
+            } catch (e) {
+              print('Fallback addItem failed: $e');
+            }
+          } catch (e) {
+            print('Error parsing onMessageOpenedApp data: $e');
+          }
+        } else {
+          if (sl<BottomNavigationCubit>().state != 0) {
+            sl<BottomNavigationCubit>().controller.jumpToPage(0);
+            sl<BottomNavigationCubit>().changeTap(0);
+          }
         }
       } catch (e) {
         print('onMessageOpenedApp error: $e');
@@ -95,8 +103,9 @@ class NotificationSetUp {
       try {
         print(
             'getInitialMessage invoked. messageId=${value.messageId}, data=${value.data}, notification=${value.notification != null}');
-        final activeNotification =
-            await _localNotifications.getActiveNotifications();
+
+        // Show smart notification if there are active notifications
+        final activeNotification = await _localNotifications.getActiveNotifications();
         if (activeNotification.length >= 1) {
           SmartDialog.dismiss();
           showSmartNotification(
@@ -111,18 +120,44 @@ class NotificationSetUp {
             title: value.data["title"],
           );
         }
-        sl<BottomNavigationCubit>().controller.jumpToPage(0);
-        sl<BottomNavigationCubit>().changeTap(0);
+
+        if (value.data.isNotEmpty) {
+          try {
+            final data = Map<String, dynamic>.from(value.data);
+            if (data['orders'] is String) {
+              data['orders'] = jsonDecode(data['orders']);
+            }
+            final order = OrderEntity.fromJson(data);
+
+            // Ensure main page is visible then navigate to order details
+            try {
+              sl<BottomNavigationCubit>().controller.jumpToPage(0);
+              sl<BottomNavigationCubit>().changeTap(0);
+            } catch (_) {}
+
+            try {
+              router.go('/order_details?id=${order.id}');
+              return;
+            } catch (_) {}
+
+            // Fallback: add item to ordering list
+            try {
+              sl<OrderBloc>().pagingController.addItem(order);
+            } catch (e) {
+              print('Fallback addItem failed: $e');
+            }
+          } catch (e) {
+            print('Error handling initial message: $e');
+          }
+        }
       } catch (e) {
         print('getInitialMessage error: $e');
         return;
       }
     });
 
-    // Subscribe to topic
-    messaging
-        .subscribeToTopic(user?.markets?.first.topicNotification ?? "jibl");
-
+    // Still set up local notification channels and handlers, but avoid
+    // registering the device / requesting permission until user consents.
     await _setUpNotifications();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
@@ -293,6 +328,67 @@ class NotificationSetUp {
         );
       }
     });
+  }
+
+  /// Call this after the user explicitly opts in to enable push notifications.
+  /// This requests permission, obtains the FCM token, and subscribes to topic.
+  static Future<void> enableNotifications() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    // Request platform notification permission (shows system prompt)
+    await requestNotificationPermissions();
+
+    final settings = await messaging.requestPermission(
+      alert: true,
+      announcement: true,
+      badge: true,
+      carPlay: true,
+      criticalAlert: true,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized ||
+        settings.authorizationStatus == AuthorizationStatus.provisional) {
+      try {
+        final String? token = await FirebaseMessaging.instance.getToken();
+        if (token != null) {
+          await sl<LocalDataSource>().setValue(LocalDataKeys.fcmToken, token);
+          print('FCM token: $token');
+        }
+      } catch (e) {
+        print('Failed to get FCM token: $e');
+      }
+
+      try {
+        final FastFoodEntity? user = sl<LocalDataSource>().getValue(LocalDataKeys.user);
+        await messaging.subscribeToTopic(user?.markets?.first.topicNotification ?? "jibl");
+      } catch (e) {
+        print('Failed to subscribe to topic: $e');
+      }
+
+      // Persist that notifications are enabled so app UI can reflect state
+      try {
+        await sl<LocalDataSource>().setValue(LocalDataKeys.notificationsEnabled, true);
+      } catch (_) {}
+    } else {
+      print('User declined notification permissions: ${settings.authorizationStatus}');
+    }
+  }
+
+  /// Disable push notifications: unsubscribe and clear stored token/state.
+  static Future<void> disableNotifications() async {
+    try {
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      final FastFoodEntity? user = sl<LocalDataSource>().getValue(LocalDataKeys.user);
+      await messaging.unsubscribeFromTopic(user?.markets?.first.topicNotification ?? "jibl");
+    } catch (e) {
+      print('Failed to unsubscribe from topic: $e');
+    }
+    try {
+      await sl<LocalDataSource>().setValue(LocalDataKeys.fcmToken, null);
+      await sl<LocalDataSource>().setValue(LocalDataKeys.notificationsEnabled, false);
+    } catch (_) {}
   }
 
   static _setUpNotifications() async {
