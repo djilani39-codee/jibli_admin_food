@@ -61,6 +61,7 @@ class NotificationSetUp {
               data['orders'] = jsonDecode(data['orders']);
             }
             final order = OrderEntity.fromJson(data);
+            final String orderId = order.id?.toString() ?? data['id']?.toString() ?? '';
 
             // Ensure main page is visible then navigate to order details
             try {
@@ -68,16 +69,21 @@ class NotificationSetUp {
               sl<BottomNavigationCubit>().changeTap(0);
             } catch (_) {}
 
-            try {
-              router.go('/order_details?id=${order.id}');
-              return;
-            } catch (_) {}
-
-            // Fallback: add item to ordering list so user can open it manually
-            try {
-              sl<OrderBloc>().pagingController.addItem(order);
-            } catch (e) {
-              print('Fallback addItem failed: $e');
+            if (orderId.isNotEmpty) {
+              Future.delayed(const Duration(milliseconds: 300), () {
+                try {
+                  router.push('/order_details?id=$orderId');
+                  return;
+                } catch (e) {
+                  print('Router navigation failed: $e');
+                  // Fallback: add item to ordering list so user can open it manually
+                  try {
+                    sl<OrderBloc>().pagingController.addItem(order);
+                  } catch (e) {
+                    print('Fallback addItem failed: $e');
+                  }
+                }
+              });
             }
           } catch (e) {
             print('Error parsing onMessageOpenedApp data: $e');
@@ -128,6 +134,7 @@ class NotificationSetUp {
               data['orders'] = jsonDecode(data['orders']);
             }
             final order = OrderEntity.fromJson(data);
+            final String orderId = order.id?.toString() ?? data['id']?.toString() ?? '';
 
             // Ensure main page is visible then navigate to order details
             try {
@@ -135,16 +142,22 @@ class NotificationSetUp {
               sl<BottomNavigationCubit>().changeTap(0);
             } catch (_) {}
 
-            try {
-              router.go('/order_details?id=${order.id}');
-              return;
-            } catch (_) {}
-
-            // Fallback: add item to ordering list
-            try {
-              sl<OrderBloc>().pagingController.addItem(order);
-            } catch (e) {
-              print('Fallback addItem failed: $e');
+            // Add delay to ensure router is ready
+            if (orderId.isNotEmpty) {
+              Future.delayed(const Duration(milliseconds: 500), () {
+                try {
+                  router.push('/order_details?id=$orderId');
+                  return;
+                } catch (e) {
+                  print('Router navigation failed: $e');
+                  // Fallback: add item to ordering list
+                  try {
+                    sl<OrderBloc>().pagingController.addItem(order);
+                  } catch (e) {
+                    print('Fallback addItem failed: $e');
+                  }
+                }
+              });
             }
           } catch (e) {
             print('Error handling initial message: $e');
@@ -260,6 +273,8 @@ class NotificationSetUp {
         }
 
         // show notification using the computed androidDetails
+        // Pass only the order ID as payload for proper navigation
+        final String orderId = data['id']?.toString() ?? '';
         await _localNotifications.show(
           message.hashCode,
           data['title'] ?? message.notification?.title,
@@ -272,7 +287,7 @@ class NotificationSetUp {
               presentSound: true,
             ),
           ),
-          payload: data.toString(),
+          payload: orderId,
         );
 
         if (sl<OrderFilterCubit<StateOrder>>().state == null ||
@@ -446,14 +461,22 @@ class NotificationSetUp {
     await _localNotifications.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (response) {
-        // Handle notification tapped logic here; log payload if present
+        // Handle notification tapped logic here
         try {
           final payload = response.payload;
           if (payload != null && payload.isNotEmpty) {
             print('Notification tapped payload: $payload');
+            // Navigate to order details using the payload ID
+            Future.delayed(const Duration(milliseconds: 200), () {
+              try {
+                router.push('/order_details?id=$payload');
+              } catch (e) {
+                print('Failed to navigate from notification: $e');
+              }
+            });
           }
         } catch (e) {
-          // ignore
+          print('Error handling notification response: $e');
         }
       },
     );
