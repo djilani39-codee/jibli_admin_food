@@ -101,6 +101,7 @@ class OrdersScreen extends StatelessWidget {
                                       ? pendingWidget(
                                           index: index,
                                           item: item,
+                                          onShowDetails: (order) => detailsOrder(item: order),
                                         )
                                       : item.status == 'accepted'
                                           ? AcceptedWidget(item: item)
@@ -600,10 +601,12 @@ class pendingWidget extends StatelessWidget {
     super.key,
     required this.index,
     required this.item,
+    required this.onShowDetails,
   });
 
   final OrderEntity item;
   final int index;
+  final Future<dynamic> Function(OrderEntity) onShowDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -867,13 +870,15 @@ class pendingWidget extends StatelessWidget {
                                 // ),
                               ),
                               onPressed: () {
-                                context
-                                    .read<AcceptedRejectedOrderCubit>()
-                                    .accepted(
-                                        Filter(
-                                            acceptorder:
-                                                int.parse('${item.id}')),
-                                        index);
+                                onShowDetails(item).then((_) {
+                                  context
+                                      .read<AcceptedRejectedOrderCubit>()
+                                      .accepted(
+                                          Filter(
+                                              acceptorder:
+                                                  int.parse('${item.id}')),
+                                          index);
+                                });
                               },
                               child: state.maybeWhen(
                                   loading: () =>
