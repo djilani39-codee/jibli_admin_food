@@ -517,19 +517,43 @@ Future<void> requestNotificationPermissions() async {
   try {
     final PermissionStatus status = await Permission.notification.request();
     if (status.isGranted) {
-      print('Notification permission granted');
+      print('✓ Notification permission granted');
+      // Now subscribe to topic after permission is granted
+      await _subscribeToRestaurantTopic();
     } else if (status.isDenied) {
-      print('Notification permission denied');
-      // Don't block UI with openAppSettings here
-      // User can enable in Settings manually
+      print('✗ Notification permission denied - app will continue without notifications');
+      // Don't block app, user can enable later in Settings
     } else if (status.isPermanentlyDenied) {
-      print('Notification permission permanently denied');
-      // Optionally open settings in background
-      Future.delayed(const Duration(seconds: 2), () {
-        openAppSettings();
-      });
+      print('✗ Notification permission permanently denied');
+      // Silently continue - don't force settings dialog
     }
   } catch (e) {
     print('Error requesting notification permission: $e');
+    // Continue app even if permission request fails
+  }
+}
+
+/// Subscribe to restaurant topic safely
+Future<void> _subscribeToRestaurantTopic() async {
+  try {
+    final FirebaseMessaging messaging = FirebaseMessaging.instance;
+    final FastFoodEntity? user = sl<LocalDataSource>().getValue(LocalDataKeys.user);
+    final topic = user?.markets?.first.topicNotification ?? "jibl";
+    
+    await messaging.subscribeToTopic(topic);
+    print('✓ Subscribed to topic: $topic');
+  } catch (e) {
+    print('Failed to subscribe to topic: $e');
+    // Continue even if subscription fails
+  }
+}
+/// Safe method to enable notifications - can be called anytime after user consent
+/// This is useful for settings screens where user wants to enable notifications later
+Future<void> safeEnableNotifications() async {
+  try {
+    await NotificationSetUp.enableNotifications();
+  } catch (e) {
+    print('Error enabling notifications: $e');
+    // Silently fail - app continues to work
   }
 }

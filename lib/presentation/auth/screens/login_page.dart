@@ -41,11 +41,15 @@ class login extends HookWidget {
               FastFoodEntity? user =
                   sl<LocalDataSource>().getValue(LocalDataKeys.user);
               final topic = user?.markets?.first.topicNotification ?? "jibl";
-              await FirebaseMessaging.instance.subscribeToTopic(topic);
-              await sl<LocalDataSource>().setValue(LocalDataKeys.restaurantTopic, topic);
+              
+              // Store the topic for later use
+              await sl<LocalDataSource>()
+                  .setValue(LocalDataKeys.restaurantTopic, topic);
+              
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('تم الاشتراك في التوبيك: $topic')),
+                SnackBar(content: Text('تم تسجيل الدخول بنجاح')),
               );
+              
               context.read<BottomNavigationCubit>().changeTap(0);
               context.goNamed(Routes.main.name);
             },
@@ -66,7 +70,7 @@ class login extends HookWidget {
                     children: [
                       Spacer(),
                       Text(
-                        "مرحبا بك في جيبلي المطعم",
+                        "مرحبا بك في جيبلي المحل",
                         style: TextStyle(
                             fontSize: 20.dp, fontWeight: FontWeight.bold),
                       ),
