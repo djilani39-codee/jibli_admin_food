@@ -1,7 +1,7 @@
 // service locator
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive_flutter/adapters.dart';
+import 'package:hive/hive.dart';
 import 'package:jibli_admin_food/core/enums.dart';
 import 'package:jibli_admin_food/data/local_data_source/local_data_source.dart';
 import 'package:jibli_admin_food/data/remote_data_source/custom_interceptor.dart';

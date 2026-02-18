@@ -65,6 +65,10 @@ dependencies:
   open_filex: ^4.3.2
   path_provider: ^2.1.0
 
+  # --- Local Storage (Hive) ---
+  hive: ^2.2.0
+  hive_flutter: ^1.1.0
+
   # --- Icons ---
   cupertino_icons: ^1.0.6
   iconsax: ^0.0.8
