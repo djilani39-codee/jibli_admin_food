@@ -6,7 +6,7 @@ part of 'profile_remote_data_source.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unused_element_parameter
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element
 
 class _ProfileRemoteDataSource implements ProfileRemoteDataSource {
   _ProfileRemoteDataSource(

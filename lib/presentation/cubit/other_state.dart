@@ -7,4 +7,5 @@ class OtherState with _$OtherState {
   const factory OtherState.logedIn() = _LogedIn;
   const factory OtherState.success({String? msg}) = _success;
   const factory OtherState.eroor(ErrorState error) = _eroor;
+  const factory OtherState.debtLoaded({required double debt}) = _DebtLoadedState;
 }

@@ -9,6 +9,13 @@
 
 import 'package:flutter/widgets.dart';
 
+class $IosGen {
+  const $IosGen();
+
+  /// Directory path: ios/Runner
+  $IosRunnerGen get runner => const $IosRunnerGen();
+}
+
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
@@ -53,6 +60,19 @@ class $AssetsTranslationsGen {
   List<String> get values => [ar, en];
 }
 
+class $IosRunnerGen {
+  const $IosRunnerGen();
+
+  /// File path: ios/Runner/GoogleService-Info.plist
+  String get googleServiceInfo => 'ios/Runner/GoogleService-Info.plist';
+
+  /// File path: ios/Runner/alarm.caf
+  String get alarm => 'ios/Runner/alarm.caf';
+
+  /// List of all assets
+  List<String> get values => [googleServiceInfo, alarm];
+}
+
 class Assets {
   const Assets._();
 
@@ -60,6 +80,7 @@ class Assets {
   static const $AssetsLogoGen logo = $AssetsLogoGen();
   static const String sound1 = 'assets/sound1.mp3';
   static const $AssetsTranslationsGen translations = $AssetsTranslationsGen();
+  static const $IosGen ios = $IosGen();
 
   /// List of all assets
   static List<String> get values => [sound1];

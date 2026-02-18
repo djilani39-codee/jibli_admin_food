@@ -7,27 +7,34 @@ import 'package:retrofit/retrofit.dart';
 
 part 'other_remote_data_source.g.dart';
 
-/// Minimal ParseErrorLogger used by generated Retrofit code.
 abstract class ParseErrorLogger {
   void logError(Object error, StackTrace stackTrace, RequestOptions request);
 }
 
 @RestApi(
-  baseUrl: "https://foodwood.site/jibli/api",
+  baseUrl:
+      "https://foodwood.site/jibli/api", // نترك الرابط الأصلي ليعمل تسجيل الدخول
   parser: Parser.FlutterCompute,
 )
 abstract class OtherRemoteDataSource {
   factory OtherRemoteDataSource(Dio dio, {String baseUrl}) =
       _OtherRemoteDataSource;
 
+  @GET("/markets/debt/{id}")
+  Future<HttpResponse> getMarketDebt({
+    @Path("id") required String id,
+  });
+
   @GET("/market/settings.php?")
   Future<HttpResponse> updateWorkdays({
     @Queries() required Map<String, dynamic> queries,
   });
+
   @POST("/market/settings.php?")
   Future<HttpResponse> onVacation({
     @Queries() required Map<String, dynamic> queries,
   });
+
   @POST("/market/login.php?")
   Future<HttpResponse<FastFoodResponse>> login({
     @Queries() required Map<String, dynamic> queries,

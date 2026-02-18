@@ -83,4 +83,40 @@ class OtherCubit extends Cubit<OtherState> {
       ),
     );
   }
+
+  Future<void> getMarketDebt({required Filter filter}) async {
+    print("🚀 CUBIT: getMarketDebt called!");
+    print("🚀 CUBIT: Filter: $filter");
+    print("🚀 CUBIT: Emitting loading state...");
+    
+    emit(const OtherState.loading());
+    
+    print("🚀 CUBIT: Calling repository.getMarketDebt...");
+    final result = await otherRepository.getMarketDebt(filter);
+    
+    print("🚀 CUBIT: Got result: $result");
+    
+    emit(
+      result.when(
+        failure: (failure) {
+          print('🚀 CUBIT: failure state');
+          return failure!.maybeWhen(
+            other: (data) => OtherState.eroor(
+              ErrorState.other(message: data ?? "فشل في جلب العمولة"),
+            ),
+            orElse: () => const OtherState.eroor(
+              ErrorState.other(message: "حدث خطـأ ما"),
+            ),
+            network: (message) =>
+                OtherState.eroor(ErrorState.networkError(message: message)),
+          );
+        },
+        success: (data) {
+          print('🚀 CUBIT: success state with data: $data');
+          double debt = (data is double) ? data : (data as num).toDouble();
+          return OtherState.debtLoaded(debt: debt);
+        },
+      ),
+    );
+  }
 }

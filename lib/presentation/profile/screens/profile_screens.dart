@@ -13,6 +13,7 @@ import 'package:jibli_admin_food/data/local_data_source/local_data_keys.dart';
 import 'package:jibli_admin_food/data/local_data_source/local_data_source.dart';
 import 'package:jibli_admin_food/domain/entity/fast_food_entity/fast_food_response.dart';
 import 'package:jibli_admin_food/presentation/cubit/other_cubit.dart';
+import 'package:jibli_admin_food/presentation/profile/widgets/market_debt_card.dart';
 import 'package:jibli_admin_food/utils.dart';
 import 'dart:io';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -59,6 +60,43 @@ class ProfileScreen extends StatelessWidget {
                   ProfileHeadline(
                     user: user!,
                   ),
+                  // زر تحديث العمولة
+                  BlocBuilder<OtherCubit, OtherState>(
+                    builder: (context, state) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            print("🔘 DEBUG: تحديث العمولة button pressed!");
+                            if (user.markets != null && user.markets!.isNotEmpty) {
+                              final marketId = int.tryParse(user.markets!.first.marketId ?? '');
+                              print("🔘 DEBUG: marketId parsed: $marketId");
+                              if (marketId != null) {
+                                print("🔘 DEBUG: Calling getMarketDebt with marketId: $marketId");
+                                context.read<OtherCubit>().getMarketDebt(
+                                  filter: Filter(id: marketId),
+                                );
+                              } else {
+                                print("❌ DEBUG: Failed to parse marketId");
+                              }
+                            } else {
+                              print("❌ DEBUG: No markets available");
+                            }
+                          },
+                          icon: const Icon(Icons.refresh),
+                          label: const Text("تحديث العمولة"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange.shade600,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const MarketDebtCard(),
                   Expanded(
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
@@ -188,14 +226,15 @@ class ProfileScreen extends StatelessWidget {
                                         FastFoodEntity? user =
                                             sl<LocalDataSource>()
                                                 .getValue(LocalDataKeys.user);
+                                        bool isOnVacation =
+                                            user?.markets?.first.onVacation ??
+                                                false;
                                         return Switch(
-                                          activeColor: AppTheme.primaryColor,
-                                          inactiveTrackColor: AppTheme.lightRed,
-                                          activeTrackColor:
-                                              AppTheme.secondaryColor,
-                                          value:
-                                              user?.markets?.first.onVacation ??
-                                                  false,
+                                          activeColor: Colors.red,
+                                          inactiveTrackColor: Colors.green.shade200,
+                                          activeTrackColor: Colors.red.shade200,
+                                          inactiveThumbColor: Colors.green,
+                                          value: isOnVacation,
                                           onChanged: (value) {
                                             print(value);
                                             context

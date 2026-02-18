@@ -121,4 +121,21 @@ class FoodRepositoryImpl implements FoodRepository {
           error: Exceptions.other(e.getException.localizedErrorMessage));
     }
   }
+
+  @override
+  Future<Result<FoodPaginated, Exceptions>> addNewProduct(
+      FormData formData) async {
+    try {
+      var response = await remoteDataSource.addProduct(formData: formData);
+      if (response.data.success) {
+        return Result.success(data: response.data);
+      }
+      return Result.failure(error: Exceptions.other('فشل في إضافة المنتج'));
+    } on DioException catch (e) {
+      return Result.failure(error: e.handelException());
+    } catch (e) {
+      return Result.failure(
+          error: Exceptions.other(e.getException.localizedErrorMessage));
+    }
+  }
 }

@@ -86,4 +86,38 @@ class OtherRepositoryImpl implements OtherRepository {
           error: Exceptions.other(e.getException.localizedErrorMessage));
     }
   }
+
+  @override
+  Future<Result<dynamic, Exceptions>> getMarketDebt(Filter params) async {
+    try {
+      // 1. استخراج الـ ID والتأكد منه
+      final marketId = params.id ?? params.marketId;
+      print("🚀 محاولة الاتصال بالسيرفر للمتجر رقم: $marketId");
+
+      if (marketId == null) {
+        return Result.failure(error: Exceptions.other("ID المتجر غير موجود"));
+      }
+
+      // 2. استدعاء السيرفر مع وضع وقت أقصى للانتظار (لأن السيرفر قد لا يرد)
+      // نستخدم الرابط المباشر لضمان عدم حدوث تضارب في الـ BaseURL
+      final response = await remoteDataSource.getMarketDebt(id: marketId.toString())
+          .timeout(const Duration(seconds: 10)); // إذا لم يرد السيرفر في 10 ثوانٍ سيخرج بخطأ
+
+      print("📡 رد السيرفر وصل: ${response.data}");
+
+      // 3. تحليل الرد
+      if (response.data is Map && response.data['success'] == true) {
+        var debt = response.data['data'];
+        // تحويل القيمة لرقم دبل لضمان عدم حدوث خطأ في الواجهة
+        double finalDebt = double.tryParse(debt.toString()) ?? 0.0;
+        return Result.success(data: finalDebt);
+      }
+
+      return Result.failure(error: Exceptions.other("فشل في قراءة مديونية المتجر"));
+
+    } catch (e) {
+      print("❌ خطأ أثناء جلب المديونية: $e");
+      return Result.failure(error: Exceptions.other("السيرفر لا يستجيب حالياً"));
+    }
+  }
 }

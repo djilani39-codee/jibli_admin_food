@@ -16,17 +16,29 @@ class CustomInterceptor extends InterceptorsWrapper {
       LocalDataKeys.accessToken,
     );
 
-    options.queryParameters["market_id"] = sl<LocalDataSource>()
+    final marketId = sl<LocalDataSource>()
         .getValue<FastFoodEntity>(LocalDataKeys.user)
         ?.markets
         ?.first
         .marketId;
-    options.queryParameters["user_id"] = sl<LocalDataSource>()
+    final userId = sl<LocalDataSource>()
         .getValue<FastFoodEntity>(LocalDataKeys.user)
         ?.userId;
-    options.queryParameters["api_token"] = sl<LocalDataSource>()
+    final apiToken = sl<LocalDataSource>()
         .getValue<FastFoodEntity>(LocalDataKeys.user)
         ?.apiToken;
+
+    // إضافة query parameters فقط للـ GET requests و requests أخرى بدون FormData
+    if (options.method.toUpperCase() != 'POST' || options.data is! FormData) {
+      options.queryParameters["market_id"] = marketId;
+      options.queryParameters["user_id"] = userId;
+      options.queryParameters["api_token"] = apiToken;
+    }
+
+    // إضافة /public للـ /markets/debt/ endpoints (العمولات)
+    if (options.path.contains('/markets/debt/')) {
+      options.baseUrl = 'https://foodwood.site/jibli/public/api';
+    }
 
     'baseUrl : ${options.baseUrl}\n'
             'url : ${options.uri}\n'
@@ -35,6 +47,8 @@ class CustomInterceptor extends InterceptorsWrapper {
             'queryParameters: ${options.queryParameters}\n'
             'accessToken : $accessToken\n'
         .log(name: 'Dio Request');
+    // also print plainly so flutter run console shows it clearly
+    print('Dio Request -> ${options.method} ${options.uri} | queries=${options.queryParameters}');
     if (accessToken == null) {
       'headers : ${options.headers}'.log(name: 'Dio Request');
 

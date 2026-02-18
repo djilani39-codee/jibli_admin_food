@@ -23,6 +23,7 @@ mixin _$OtherState {
     required TResult Function() logedIn,
     required TResult Function(String? msg) success,
     required TResult Function(ErrorState error) eroor,
+    required TResult Function(double debt) debtLoaded,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -32,6 +33,7 @@ mixin _$OtherState {
     TResult? Function()? logedIn,
     TResult? Function(String? msg)? success,
     TResult? Function(ErrorState error)? eroor,
+    TResult? Function(double debt)? debtLoaded,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -41,6 +43,7 @@ mixin _$OtherState {
     TResult Function()? logedIn,
     TResult Function(String? msg)? success,
     TResult Function(ErrorState error)? eroor,
+    TResult Function(double debt)? debtLoaded,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -51,6 +54,7 @@ mixin _$OtherState {
     required TResult Function(_LogedIn value) logedIn,
     required TResult Function(_success value) success,
     required TResult Function(_eroor value) eroor,
+    required TResult Function(_DebtLoadedState value) debtLoaded,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -60,6 +64,7 @@ mixin _$OtherState {
     TResult? Function(_LogedIn value)? logedIn,
     TResult? Function(_success value)? success,
     TResult? Function(_eroor value)? eroor,
+    TResult? Function(_DebtLoadedState value)? debtLoaded,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -69,6 +74,7 @@ mixin _$OtherState {
     TResult Function(_LogedIn value)? logedIn,
     TResult Function(_success value)? success,
     TResult Function(_eroor value)? eroor,
+    TResult Function(_DebtLoadedState value)? debtLoaded,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -141,6 +147,7 @@ class _$InitialImpl implements _Initial {
     required TResult Function() logedIn,
     required TResult Function(String? msg) success,
     required TResult Function(ErrorState error) eroor,
+    required TResult Function(double debt) debtLoaded,
   }) {
     return initial();
   }
@@ -153,6 +160,7 @@ class _$InitialImpl implements _Initial {
     TResult? Function()? logedIn,
     TResult? Function(String? msg)? success,
     TResult? Function(ErrorState error)? eroor,
+    TResult? Function(double debt)? debtLoaded,
   }) {
     return initial?.call();
   }
@@ -165,6 +173,7 @@ class _$InitialImpl implements _Initial {
     TResult Function()? logedIn,
     TResult Function(String? msg)? success,
     TResult Function(ErrorState error)? eroor,
+    TResult Function(double debt)? debtLoaded,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -181,6 +190,7 @@ class _$InitialImpl implements _Initial {
     required TResult Function(_LogedIn value) logedIn,
     required TResult Function(_success value) success,
     required TResult Function(_eroor value) eroor,
+    required TResult Function(_DebtLoadedState value) debtLoaded,
   }) {
     return initial(this);
   }
@@ -193,6 +203,7 @@ class _$InitialImpl implements _Initial {
     TResult? Function(_LogedIn value)? logedIn,
     TResult? Function(_success value)? success,
     TResult? Function(_eroor value)? eroor,
+    TResult? Function(_DebtLoadedState value)? debtLoaded,
   }) {
     return initial?.call(this);
   }
@@ -205,6 +216,7 @@ class _$InitialImpl implements _Initial {
     TResult Function(_LogedIn value)? logedIn,
     TResult Function(_success value)? success,
     TResult Function(_eroor value)? eroor,
+    TResult Function(_DebtLoadedState value)? debtLoaded,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -264,6 +276,7 @@ class _$loadingImpl implements _loading {
     required TResult Function() logedIn,
     required TResult Function(String? msg) success,
     required TResult Function(ErrorState error) eroor,
+    required TResult Function(double debt) debtLoaded,
   }) {
     return loading();
   }
@@ -276,6 +289,7 @@ class _$loadingImpl implements _loading {
     TResult? Function()? logedIn,
     TResult? Function(String? msg)? success,
     TResult? Function(ErrorState error)? eroor,
+    TResult? Function(double debt)? debtLoaded,
   }) {
     return loading?.call();
   }
@@ -288,6 +302,7 @@ class _$loadingImpl implements _loading {
     TResult Function()? logedIn,
     TResult Function(String? msg)? success,
     TResult Function(ErrorState error)? eroor,
+    TResult Function(double debt)? debtLoaded,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -304,6 +319,7 @@ class _$loadingImpl implements _loading {
     required TResult Function(_LogedIn value) logedIn,
     required TResult Function(_success value) success,
     required TResult Function(_eroor value) eroor,
+    required TResult Function(_DebtLoadedState value) debtLoaded,
   }) {
     return loading(this);
   }
@@ -316,6 +332,7 @@ class _$loadingImpl implements _loading {
     TResult? Function(_LogedIn value)? logedIn,
     TResult? Function(_success value)? success,
     TResult? Function(_eroor value)? eroor,
+    TResult? Function(_DebtLoadedState value)? debtLoaded,
   }) {
     return loading?.call(this);
   }
@@ -328,6 +345,7 @@ class _$loadingImpl implements _loading {
     TResult Function(_LogedIn value)? logedIn,
     TResult Function(_success value)? success,
     TResult Function(_eroor value)? eroor,
+    TResult Function(_DebtLoadedState value)? debtLoaded,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -387,6 +405,7 @@ class _$LogedInImpl implements _LogedIn {
     required TResult Function() logedIn,
     required TResult Function(String? msg) success,
     required TResult Function(ErrorState error) eroor,
+    required TResult Function(double debt) debtLoaded,
   }) {
     return logedIn();
   }
@@ -399,6 +418,7 @@ class _$LogedInImpl implements _LogedIn {
     TResult? Function()? logedIn,
     TResult? Function(String? msg)? success,
     TResult? Function(ErrorState error)? eroor,
+    TResult? Function(double debt)? debtLoaded,
   }) {
     return logedIn?.call();
   }
@@ -411,6 +431,7 @@ class _$LogedInImpl implements _LogedIn {
     TResult Function()? logedIn,
     TResult Function(String? msg)? success,
     TResult Function(ErrorState error)? eroor,
+    TResult Function(double debt)? debtLoaded,
     required TResult orElse(),
   }) {
     if (logedIn != null) {
@@ -427,6 +448,7 @@ class _$LogedInImpl implements _LogedIn {
     required TResult Function(_LogedIn value) logedIn,
     required TResult Function(_success value) success,
     required TResult Function(_eroor value) eroor,
+    required TResult Function(_DebtLoadedState value) debtLoaded,
   }) {
     return logedIn(this);
   }
@@ -439,6 +461,7 @@ class _$LogedInImpl implements _LogedIn {
     TResult? Function(_LogedIn value)? logedIn,
     TResult? Function(_success value)? success,
     TResult? Function(_eroor value)? eroor,
+    TResult? Function(_DebtLoadedState value)? debtLoaded,
   }) {
     return logedIn?.call(this);
   }
@@ -451,6 +474,7 @@ class _$LogedInImpl implements _LogedIn {
     TResult Function(_LogedIn value)? logedIn,
     TResult Function(_success value)? success,
     TResult Function(_eroor value)? eroor,
+    TResult Function(_DebtLoadedState value)? debtLoaded,
     required TResult orElse(),
   }) {
     if (logedIn != null) {
@@ -537,6 +561,7 @@ class _$successImpl implements _success {
     required TResult Function() logedIn,
     required TResult Function(String? msg) success,
     required TResult Function(ErrorState error) eroor,
+    required TResult Function(double debt) debtLoaded,
   }) {
     return success(msg);
   }
@@ -549,6 +574,7 @@ class _$successImpl implements _success {
     TResult? Function()? logedIn,
     TResult? Function(String? msg)? success,
     TResult? Function(ErrorState error)? eroor,
+    TResult? Function(double debt)? debtLoaded,
   }) {
     return success?.call(msg);
   }
@@ -561,6 +587,7 @@ class _$successImpl implements _success {
     TResult Function()? logedIn,
     TResult Function(String? msg)? success,
     TResult Function(ErrorState error)? eroor,
+    TResult Function(double debt)? debtLoaded,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -577,6 +604,7 @@ class _$successImpl implements _success {
     required TResult Function(_LogedIn value) logedIn,
     required TResult Function(_success value) success,
     required TResult Function(_eroor value) eroor,
+    required TResult Function(_DebtLoadedState value) debtLoaded,
   }) {
     return success(this);
   }
@@ -589,6 +617,7 @@ class _$successImpl implements _success {
     TResult? Function(_LogedIn value)? logedIn,
     TResult? Function(_success value)? success,
     TResult? Function(_eroor value)? eroor,
+    TResult? Function(_DebtLoadedState value)? debtLoaded,
   }) {
     return success?.call(this);
   }
@@ -601,6 +630,7 @@ class _$successImpl implements _success {
     TResult Function(_LogedIn value)? logedIn,
     TResult Function(_success value)? success,
     TResult Function(_eroor value)? eroor,
+    TResult Function(_DebtLoadedState value)? debtLoaded,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -707,6 +737,7 @@ class _$eroorImpl implements _eroor {
     required TResult Function() logedIn,
     required TResult Function(String? msg) success,
     required TResult Function(ErrorState error) eroor,
+    required TResult Function(double debt) debtLoaded,
   }) {
     return eroor(error);
   }
@@ -719,6 +750,7 @@ class _$eroorImpl implements _eroor {
     TResult? Function()? logedIn,
     TResult? Function(String? msg)? success,
     TResult? Function(ErrorState error)? eroor,
+    TResult? Function(double debt)? debtLoaded,
   }) {
     return eroor?.call(error);
   }
@@ -731,6 +763,7 @@ class _$eroorImpl implements _eroor {
     TResult Function()? logedIn,
     TResult Function(String? msg)? success,
     TResult Function(ErrorState error)? eroor,
+    TResult Function(double debt)? debtLoaded,
     required TResult orElse(),
   }) {
     if (eroor != null) {
@@ -747,6 +780,7 @@ class _$eroorImpl implements _eroor {
     required TResult Function(_LogedIn value) logedIn,
     required TResult Function(_success value) success,
     required TResult Function(_eroor value) eroor,
+    required TResult Function(_DebtLoadedState value) debtLoaded,
   }) {
     return eroor(this);
   }
@@ -759,6 +793,7 @@ class _$eroorImpl implements _eroor {
     TResult? Function(_LogedIn value)? logedIn,
     TResult? Function(_success value)? success,
     TResult? Function(_eroor value)? eroor,
+    TResult? Function(_DebtLoadedState value)? debtLoaded,
   }) {
     return eroor?.call(this);
   }
@@ -771,6 +806,7 @@ class _$eroorImpl implements _eroor {
     TResult Function(_LogedIn value)? logedIn,
     TResult Function(_success value)? success,
     TResult Function(_eroor value)? eroor,
+    TResult Function(_DebtLoadedState value)? debtLoaded,
     required TResult orElse(),
   }) {
     if (eroor != null) {
@@ -789,5 +825,171 @@ abstract class _eroor implements OtherState {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$eroorImplCopyWith<_$eroorImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$DebtLoadedStateImplCopyWith<$Res> {
+  factory _$$DebtLoadedStateImplCopyWith(_$DebtLoadedStateImpl value,
+          $Res Function(_$DebtLoadedStateImpl) then) =
+      __$$DebtLoadedStateImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({double debt});
+}
+
+/// @nodoc
+class __$$DebtLoadedStateImplCopyWithImpl<$Res>
+    extends _$OtherStateCopyWithImpl<$Res, _$DebtLoadedStateImpl>
+    implements _$$DebtLoadedStateImplCopyWith<$Res> {
+  __$$DebtLoadedStateImplCopyWithImpl(
+      _$DebtLoadedStateImpl _value, $Res Function(_$DebtLoadedStateImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of OtherState
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? debt = null,
+  }) {
+    return _then(_$DebtLoadedStateImpl(
+      debt: null == debt
+          ? _value.debt
+          : debt // ignore: cast_nullable_to_non_nullable
+              as double,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$DebtLoadedStateImpl implements _DebtLoadedState {
+  const _$DebtLoadedStateImpl({required this.debt});
+
+  @override
+  final double debt;
+
+  @override
+  String toString() {
+    return 'OtherState.debtLoaded(debt: $debt)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$DebtLoadedStateImpl &&
+            (identical(other.debt, debt) || other.debt == debt));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, debt);
+
+  /// Create a copy of OtherState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$DebtLoadedStateImplCopyWith<_$DebtLoadedStateImpl> get copyWith =>
+      __$$DebtLoadedStateImplCopyWithImpl<_$DebtLoadedStateImpl>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() loading,
+    required TResult Function() logedIn,
+    required TResult Function(String? msg) success,
+    required TResult Function(ErrorState error) eroor,
+    required TResult Function(double debt) debtLoaded,
+  }) {
+    return debtLoaded(debt);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function()? logedIn,
+    TResult? Function(String? msg)? success,
+    TResult? Function(ErrorState error)? eroor,
+    TResult? Function(double debt)? debtLoaded,
+  }) {
+    return debtLoaded?.call(debt);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function()? logedIn,
+    TResult Function(String? msg)? success,
+    TResult Function(ErrorState error)? eroor,
+    TResult Function(double debt)? debtLoaded,
+    required TResult orElse(),
+  }) {
+    if (debtLoaded != null) {
+      return debtLoaded(debt);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Initial value) initial,
+    required TResult Function(_loading value) loading,
+    required TResult Function(_LogedIn value) logedIn,
+    required TResult Function(_success value) success,
+    required TResult Function(_eroor value) eroor,
+    required TResult Function(_DebtLoadedState value) debtLoaded,
+  }) {
+    return debtLoaded(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Initial value)? initial,
+    TResult? Function(_loading value)? loading,
+    TResult? Function(_LogedIn value)? logedIn,
+    TResult? Function(_success value)? success,
+    TResult? Function(_eroor value)? eroor,
+    TResult? Function(_DebtLoadedState value)? debtLoaded,
+  }) {
+    return debtLoaded?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Initial value)? initial,
+    TResult Function(_loading value)? loading,
+    TResult Function(_LogedIn value)? logedIn,
+    TResult Function(_success value)? success,
+    TResult Function(_eroor value)? eroor,
+    TResult Function(_DebtLoadedState value)? debtLoaded,
+    required TResult orElse(),
+  }) {
+    if (debtLoaded != null) {
+      return debtLoaded(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _DebtLoadedState implements OtherState {
+  const factory _DebtLoadedState({required final double debt}) =
+      _$DebtLoadedStateImpl;
+
+  double get debt;
+
+  /// Create a copy of OtherState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$DebtLoadedStateImplCopyWith<_$DebtLoadedStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

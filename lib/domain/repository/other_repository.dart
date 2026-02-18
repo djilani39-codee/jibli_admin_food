@@ -9,4 +9,5 @@ abstract class OtherRepository {
   Future<Result<dynamic, Exceptions>> updateWorkDays(Filter params);
   Future<Result<dynamic, Exceptions>> login(Filter params);
   Future<Result<dynamic, Exceptions>> onVacation(Filter params);
+  Future<Result<dynamic, Exceptions>> getMarketDebt(Filter params);
 }

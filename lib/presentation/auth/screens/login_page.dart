@@ -9,6 +9,7 @@ import 'package:jibli_admin_food/app/locator.dart';
 import 'package:jibli_admin_food/app/router.dart';
 import 'package:jibli_admin_food/app/theme.dart';
 import 'package:jibli_admin_food/core/filter.dart';
+import 'package:jibli_admin_food/core/notificaion/notification.dart';
 import 'package:jibli_admin_food/presentation/cubit/other_cubit.dart';
 import 'package:jibli_admin_food/presentation/main/blocs/main_navigation_cubi.dart';
 import 'package:jibli_admin_food/utils.dart';
@@ -45,6 +46,9 @@ class login extends HookWidget {
               // Store the topic for later use
               await sl<LocalDataSource>()
                   .setValue(LocalDataKeys.restaurantTopic, topic);
+              
+              // ✅ Enable push notifications after successful login
+              await safeEnableNotifications();
               
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('تم تسجيل الدخول بنجاح')),

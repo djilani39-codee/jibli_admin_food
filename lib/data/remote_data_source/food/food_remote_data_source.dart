@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jibli_admin_food/core/paginated/food_paginated.dart';
 import 'package:retrofit/retrofit.dart';
+import 'package:http_parser/http_parser.dart';
 
 part 'food_remote_data_source.g.dart';
 
@@ -50,6 +51,11 @@ abstract class FoodRemoteDataSource {
   @POST("/market/products.php?")
   Future<HttpResponse<FoodPaginated>> changeScheduling({
     @Queries() required Map<String, dynamic> queries,
+  });
+
+  @POST("/market/products.php")
+  Future<HttpResponse<FoodPaginated>> addProduct({
+    @Body() required FormData formData,
   });
 }
 

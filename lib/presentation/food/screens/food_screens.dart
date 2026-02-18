@@ -7,6 +7,7 @@ import 'package:jibli_admin_food/core/filter.dart';
 import 'package:jibli_admin_food/presentation/food/cubit/available_cubit/available_food_cubit.dart';
 import 'package:jibli_admin_food/presentation/food/cubit/food_cubit.dart';
 import 'package:jibli_admin_food/presentation/food/cubit/food_filter_cubit.dart';
+import 'package:jibli_admin_food/presentation/food/screens/add_product_screen.dart';
 import 'package:jibli_admin_food/presentation/food/widgets/food_item.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -41,6 +42,26 @@ class FoodScreen extends HookWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("قائمة المأكولات"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddProductScreen(),
+                  ),
+                ).then((result) {
+                  if (result == true) {
+                    // تأخير صغير للانتظار من السرفر
+                    Future.delayed(Duration(milliseconds: 500), () {
+                      context.read<FoodCubit>().load(filter: Filter());
+                    });
+                  }
+                });
+              },
+            ),
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
