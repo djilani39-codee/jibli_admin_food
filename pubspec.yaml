@@ -110,15 +110,15 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  # development
+  # تم تحديث الإصدارات أدناه لحل تضارب analyzer و test_api
   flutter_gen_runner: ^5.4.0
-  bloc_test: ^9.1.1
-  build_runner: ^2.4.8
+  bloc_test: ^10.0.0  # تحديث من 9.1.1
+  build_runner: ^2.4.9
   envied_generator: ^0.5.3
-  freezed: ^2.4.7
+  freezed: ^2.5.2     # تحديث من 2.4.7 ليتوافق مع analyzer الجديد
   hive_generator: ^2.0.1
-  json_serializable: ^6.7.1
-  mocktail: ^1.0.3
+  json_serializable: ^6.8.0
+  mocktail: ^1.0.4
   retrofit_generator: ^8.1.0
   very_good_analysis: ^5.1.0
 # For information on the generic Dart part of this file, see the
