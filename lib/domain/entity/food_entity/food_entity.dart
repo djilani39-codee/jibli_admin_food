@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 
 part 'food_entity.g.dart';
