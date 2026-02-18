@@ -2,7 +2,7 @@ name: jibli_admin_food
 description: "A new Flutter project for Jibli Admin."
 publish_to: 'none'
 
-version: 1.0.1+66
+version: 1.0.1+67
 
 environment:
   sdk: '>=3.4.4 <4.0.0'
