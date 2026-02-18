@@ -13,7 +13,7 @@ dependencies:
 
   # --- State Management (Compatible Versions) ---
   flutter_bloc: ^9.0.0
-  bloc_concurrency: ^1.0.0  # الإصدار المتوافق مع Bloc 9 و Dart 3
+  bloc_concurrency: ^0.3.0  # الإصدار المتوافق مع Bloc 9 و Dart 3
   get_it: ^7.6.7
 
   # --- Network & API ---
